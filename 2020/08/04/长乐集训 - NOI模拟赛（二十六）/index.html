@@ -146,8 +146,8 @@ if (autoChangeMode === '1') {
 <p>求 $cost(i)$ 跳个倍增就好了</p>
 <p>那么最后将所有 $i$ 的 $cost(i)$ 排个序，设排序后某条边排在位置 $p$，则其对答案贡献 $2^{n + m - 1 - p}$（只有后面的边才能任意染色）</p>
 <p>时间复杂度 $O (m \log n)$</p>
-<h2 id="Problem-C：Network"><a href="#Problem-C：Network" class="headerlink" title="Problem C：Network"></a>Problem C：Network</h2><h3 id="题面"><a href="#题面" class="headerlink" title="题面"></a>题面</h3><p><img src= "/img/loading.gif" data-src="https://i.loli.net/2020/07/19/ZTh8wvO5FAqHKG4.png" alt=""></p>
-<p><img src= "/img/loading.gif" data-src="https://i.loli.net/2020/07/19/DAaFX5Gpq2vzY8g.png" alt=""></p>
+<h2 id="Problem-C：Network"><a href="#Problem-C：Network" class="headerlink" title="Problem C：Network"></a>Problem C：Network</h2><h3 id="题面"><a href="#题面" class="headerlink" title="题面"></a>题面</h3><p><img src= "/img/loading.gif" data-lazy-src="https://i.loli.net/2020/07/19/ZTh8wvO5FAqHKG4.png" alt=""></p>
+<p><img src= "/img/loading.gif" data-lazy-src="https://i.loli.net/2020/07/19/DAaFX5Gpq2vzY8g.png" alt=""></p>
 <h3 id="题解-2"><a href="#题解-2" class="headerlink" title="题解"></a>题解</h3><p>先计算在不反转用户的情况下，所有用户的 $MS(u)$</p>
 <p>考虑点分治，现在递归到分治中心 $p$，设 $p$ 子树点 $x$ 到 $p$ 的边的最小值和最大值 $(mi_x, ma_x)$，假设现在有服务器 $i$，用户 $j$，都是 $p$ 的子树结点，计算 $MS(j)$，考虑有哪几种情况会贡献到 $MS(j)$，即是 $ma_i - mi_x$、$ma_i - mi_j$、$ma_j - mi_i$，同时 $(mi_i, ma_i), (mi_j, ma_j)$ 之间不存在任何关系，那么也就是说只需求得 $p$ 子树中满足 $ma_i - mi_i$ 最大，或 $ma_i$ 最大、或 $mi_i$ 最大，即可更新其它所有的用户（当然要与 $i$ 不同子树），又考虑到同子树不能互相更新，所以还得记录上面三者的次大值，这样就可以求出所有 $MS(u)$</p>
 <p>接下来计算反转用户的情况，最小值最大，考虑二分答案</p>

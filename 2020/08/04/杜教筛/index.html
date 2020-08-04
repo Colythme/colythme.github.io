@@ -128,7 +128,7 @@ if (autoChangeMode === '1') {
 <ul>
 <li>那么预处理 $h, g$ 的前缀和（一般预处理 $n^{\frac{2}{3}}$ 个？），再递归整除分块即可处理，不过一般 $h, g$ 需要自己配</li>
 <li>但实际上并不需要用 $\text{unordered_map}$ 来记忆化，设题目给定 $N$，当前递归到 $n$，则 $n$ 的答案可以被 $N / n$ 记录，也就是用 $visit(\lfloor\frac{N}n\rfloor)$ 来判断是否已被搜过，下面给出别人的简单证明为什么不会判重</li>
-<li><img src= "/img/loading.gif" data-src="https://i.loli.net/2020/07/25/sG79MC6wLoOvu8k.png" alt=""></li>
+<li><img src= "/img/loading.gif" data-lazy-src="https://i.loli.net/2020/07/25/sG79MC6wLoOvu8k.png" alt=""></li>
 </ul>
 <h2 id="例"><a href="#例" class="headerlink" title="例"></a>例</h2><h3 id="求-sum-limits-i-1-n-mu-i-sum-limits-i-1-n-phi-i"><a href="#求-sum-limits-i-1-n-mu-i-sum-limits-i-1-n-phi-i" class="headerlink" title="求$\sum\limits_{i = 1}^n \mu(i), \sum\limits_{i = 1}^n \phi(i)$"></a>求$\sum\limits_{i = 1}^n \mu(i), \sum\limits_{i = 1}^n \phi(i)$</h3><p>由 $\mu * 1 = \epsilon$ ，可令 $g = 1, h = \epsilon$ ，那么得到<br>$$<br>S(n) = 1 - \sum\limits_{d = 2}^n S(\left\lfloor\frac{n}{d}\right\rfloor)<br>$$<br>求 $\sum \phi$ 同理</p>
 <h3 id="求-sum-limits-i-1-n-i-phi-i-（需要用配的）"><a href="#求-sum-limits-i-1-n-i-phi-i-（需要用配的）" class="headerlink" title="求$\sum\limits_{i = 1}^n i \phi(i) （需要用配的）$"></a>求$\sum\limits_{i = 1}^n i \phi(i) （需要用配的）$</h3><p>$$<br>h(n) = \sum\limits_{d | n} d \phi(d) g(\frac{n}{d})<br>$$</p>
