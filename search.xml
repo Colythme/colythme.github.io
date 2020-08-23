@@ -1420,11 +1420,11 @@
       
         <tags>
             
+            <tag> 斜率优化 </tag>
+            
             <tag> 树上DP </tag>
             
             <tag> 点分治 </tag>
-            
-            <tag> 斜率优化 </tag>
             
         </tags>
       
@@ -1709,9 +1709,9 @@
             
             <tag> 生成函数 </tag>
             
-            <tag> 归纳 </tag>
-            
             <tag> prufer序列 </tag>
+            
+            <tag> 归纳 </tag>
             
         </tags>
       
