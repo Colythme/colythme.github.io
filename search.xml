@@ -54,6 +54,31 @@
     
     
     <entry>
+      <title>CRT（中国剩余定理）及其扩展</title>
+      <link href="/2021/07/19/CRT%EF%BC%88%E4%B8%AD%E5%9B%BD%E5%89%A9%E4%BD%99%E5%AE%9A%E7%90%86%EF%BC%89%E5%8F%8A%E5%85%B6%E6%89%A9%E5%B1%95/"/>
+      <url>/2021/07/19/CRT%EF%BC%88%E4%B8%AD%E5%9B%BD%E5%89%A9%E4%BD%99%E5%AE%9A%E7%90%86%EF%BC%89%E5%8F%8A%E5%85%B6%E6%89%A9%E5%B1%95/</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="CRT"><a href="#CRT" class="headerlink" title="CRT"></a>CRT</h2><p>用于求解类似<br>$$<br>\left\{<br>\begin{aligned}<br>&amp;x \equiv a_1 \pmod{m_1} \\<br>&amp;x \equiv a_2 \pmod{m_2} \\<br>&amp;… \\<br>&amp;x \equiv a_n \pmod{m_n}<br>\end{aligned}<br>\right.<br>$$<br>其中，$\forall i, j, ~ (m_i, m_j) = 1$</p><p>设 $M = \prod_{i = 1}^n m_i, ~ M_i = \frac{M}{m_i}$，再设 $M_it_i \equiv 1 \pmod{m_i}$，其中 $1 \le i \le n$</p><p>则可构造一解 $x = \sum\limits_{i = 1}^n a_iM_it_i$，任意解 $x_0 = x + k \times M$</p><h2 id="ExCRT"><a href="#ExCRT" class="headerlink" title="ExCRT"></a>ExCRT</h2><p>用于求解类似<br>$$<br>\left\{<br>\begin{aligned}<br>&amp;x \equiv a_1 \pmod{m_1} \\<br>&amp;x \equiv a_2 \pmod{m_2} \\<br>&amp;… \\<br>&amp;x \equiv a_n \pmod{m_n}<br>\end{aligned}<br>\right.<br>$$<br>其中，不一定满足 $\forall i, j, ~ (m_i, m_j) = 1$</p><p>考虑两个两个处理，然后合并</p><p>现在先考虑方程<br>$$<br>\left\{<br>\begin{aligned}<br>&amp;x \equiv a_1 \pmod{m_1} \\<br>&amp;x \equiv a_2 \pmod{m_2}<br>\end{aligned}<br>\right.<br>$$<br>将同余去掉，再进行变换<br>$$<br>\left\{<br>\begin{aligned}<br>&amp;x = a_1 + k_1m_1 \\<br>&amp;x = a_2 + k_2m_2<br>\end{aligned}<br>\right. \\<br>\Rightarrow k_1m_1 - k_2m_2 = a_2 - a_1<br>$$</p><p>那么此时若 $(m_1, m_2) | (a_2 - a_1)$ 则有解，反之则无解</p><p>当然这时就可以用 $ExGCD$ 直接求解，但接下来把它化成逆元的形式会更容易解开也更不耗时</p><p>令 $d = (m_1, m_2)$，则<br>$$<br>\begin{aligned}<br>\frac{k_1m_1}d - \frac{k_2m_2}d &amp;= \frac{a_2 - a_1}d \\<br>\frac{k_1m_1}d &amp;\equiv \frac{a_2 - a_1}d \pmod{\frac{m_2}d} \\<br>k_1 &amp;\equiv inv (\frac{m_1}d, \frac{m_2}d)\frac{a_2 - a_1}d \pmod{\frac{m_2}d} \\<br>k_1 &amp;= inv (\frac{m_1}d, \frac{m_2}d)\frac{a_2 - a_1}d + t\frac{m_2}d \\<br>\end{aligned}<br>$$<br>其中 $inv (x, p)$ 表示 $x$ 在模 $p$ 意义下的逆元</p><p>此时将 $k_1$ 代入 $x = a_1 + k_1m_1$，则有<br>$$<br>x \equiv a_1 + m_1 \times inv(\frac{m_1}d, \frac{m_2}d)\frac{a_2 - a_1}d \pmod{\frac{m_1m_2}d}<br>$$<br>然后合并 $n - 1$ 次即可</p><h2 id="Ex-ExCRT"><a href="#Ex-ExCRT" class="headerlink" title="Ex-ExCRT"></a>Ex-ExCRT</h2><p>If we suppose that our equation set is something like this:<br>$$<br>\left\{<br>\begin{aligned}<br>&amp;b_1x \equiv a_1 \pmod{p_1} \\<br>&amp;b_2x \equiv a_2 \pmod{p_2} \\<br>&amp;… \\<br>&amp;b_nx \equiv a_n \pmod{p_n}<br>\end{aligned}<br>\right.<br>$$<br>then we need to change the way we process the equations</p><p>Suppose that we have got the answer of the first $i - 1$ congruence equations, we call it $ans$. And suppose $M$ to be the least common multiple of $\{p_1,p_2, p_3, …, p_n\}$, then obviously, the answer of the first $i$ congruence equations $ANS$ should be $ans + kM (k \in \mathbb Z)$. Let us start to derive:<br>$$<br>\begin{aligned}<br>&amp;ANS = ans + Mx \<br>&amp;\Rightarrow b_i (ans + Mx) \equiv a_i \pmod{p_i} \<br>&amp;\Rightarrow b_iMx \equiv a_i - b_i \times ans \pmod{p_i} \<br>&amp;\Rightarrow b_iMx + p_iy = a_i - b_i \times ans<br>\end{aligned}<br>$$<br>Apparently, we can use $ExCRT$ to solve the last equation.</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 数论 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> CRT/ExCRT </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>长乐集训 - NOI模拟赛（三十六）「订正未完成」</title>
       <link href="/2020/08/04/%E9%95%BF%E4%B9%90%E9%9B%86%E8%AE%AD%20-%20NOI%E6%A8%A1%E6%8B%9F%E8%B5%9B%EF%BC%88%E4%B8%89%E5%8D%81%E5%85%AD%EF%BC%89%E3%80%8C%E8%AE%A2%E6%AD%A3%E6%9C%AA%E5%AE%8C%E6%88%90%E3%80%8D/"/>
       <url>/2020/08/04/%E9%95%BF%E4%B9%90%E9%9B%86%E8%AE%AD%20-%20NOI%E6%A8%A1%E6%8B%9F%E8%B5%9B%EF%BC%88%E4%B8%89%E5%8D%81%E5%85%AD%EF%BC%89%E3%80%8C%E8%AE%A2%E6%AD%A3%E6%9C%AA%E5%AE%8C%E6%88%90%E3%80%8D/</url>
@@ -1816,31 +1841,6 @@
             <tag> 多项式 </tag>
             
             <tag> FFT/NTT </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>CRT（中国剩余定理）及其扩展</title>
-      <link href="/2020/08/04/CRT%EF%BC%88%E4%B8%AD%E5%9B%BD%E5%89%A9%E4%BD%99%E5%AE%9A%E7%90%86%EF%BC%89%E5%8F%8A%E5%85%B6%E6%89%A9%E5%B1%95/"/>
-      <url>/2020/08/04/CRT%EF%BC%88%E4%B8%AD%E5%9B%BD%E5%89%A9%E4%BD%99%E5%AE%9A%E7%90%86%EF%BC%89%E5%8F%8A%E5%85%B6%E6%89%A9%E5%B1%95/</url>
-      
-        <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="CRT"><a href="#CRT" class="headerlink" title="CRT"></a>CRT</h2><p>用于求解类似<br>$$<br>\left\{<br>\begin{aligned}<br>&amp;x \equiv a_1 \pmod{m_1} \\<br>&amp;x \equiv a_2 \pmod{m_2} \\<br>&amp;… \\<br>&amp;x \equiv a_n \pmod{m_n}<br>\end{aligned}<br>\right.<br>$$<br>其中，$\forall i, j, ~ (m_i, m_j) = 1$</p><p>设 $M = \prod_{i = 1}^n m_i, ~ M_i = \frac{M}{m_i}$，再设 $M_it_i \equiv 1 \pmod{m_i}$，其中 $1 \le i \le n$</p><p>则可构造一解 $x = \sum\limits_{i = 1}^n a_iM_it_i$，任意解 $x_0 = x + k \times M$</p><h2 id="ExCRT"><a href="#ExCRT" class="headerlink" title="ExCRT"></a>ExCRT</h2><p>用于求解类似<br>$$<br>\left\{<br>\begin{aligned}<br>&amp;x \equiv a_1 \pmod{m_1} \\<br>&amp;x \equiv a_2 \pmod{m_2} \\<br>&amp;… \\<br>&amp;x \equiv a_n \pmod{m_n}<br>\end{aligned}<br>\right.<br>$$<br>其中，不一定满足 $\forall i, j, ~ (m_i, m_j) = 1$</p><p>考虑两个两个处理，然后合并</p><p>现在先考虑方程<br>$$<br>\left\{<br>\begin{aligned}<br>&amp;x \equiv a_1 \pmod{m_1} \\<br>&amp;x \equiv a_2 \pmod{m_2}<br>\end{aligned}<br>\right.<br>$$<br>将同余去掉，再进行变换<br>$$<br>\left\{<br>\begin{aligned}<br>&amp;x = a_1 + k_1m_1 \\<br>&amp;x = a_2 + k_2m_2<br>\end{aligned}<br>\right. \\<br>\Rightarrow k_1m_1 - k_2m_2 = a_2 - a_1<br>$$</p><p>那么此时若 $(m_1, m_2) | (a_2 - a_1)$ 则有解，反之则无解</p><p>当然这时就可以用 $ExGCD$ 直接求解，但接下来把它化成逆元的形式会更容易解开也更不耗时</p><p>令 $d = (m_1, m_2)$，则<br>$$<br>\begin{aligned}<br>\frac{k_1m_1}d - \frac{k_2m_2}d &amp;= \frac{a_2 - a_1}d \\<br>\frac{k_1m_1}d &amp;\equiv \frac{a_2 - a_1}d \pmod{\frac{m_2}d} \\<br>k_1 &amp;\equiv inv (\frac{m_1}d, \frac{m_2}d)\frac{a_2 - a_1}d \pmod{\frac{m_2}d} \\<br>k_1 &amp;= inv (\frac{m_1}d, \frac{m_2}d)\frac{a_2 - a_1}d + t\frac{m_2}d \\<br>\end{aligned}<br>$$<br>其中 $inv (x, p)$ 表示 $x$ 在模 $p$ 意义下的逆元</p><p>此时将 $k_1$ 代入 $x = a_1 + k_1m_1$，则有<br>$$<br>x \equiv a_1 + m_1 \times inv(\frac{m_1}d, \frac{m_2}d)\frac{a_2 - a_1}d \pmod{\frac{m_1m_2}d}<br>$$<br>然后合并 $n - 1$ 次即可</p>]]></content>
-      
-      
-      <categories>
-          
-          <category> 数论 </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> CRT/ExCRT </tag>
             
         </tags>
       
