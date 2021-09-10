@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>It&#39;s Time To Learn PYTHON! (record of python challenges)</title>
+      <link href="/2021/09/09/Time%20To%20Learn%20Python/"/>
+      <url>/2021/09/09/Time%20To%20Learn%20Python/</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h1 id="It’s-Time-To-Learn-PYTHON-record-of-python-challenges"><a href="#It’s-Time-To-Learn-PYTHON-record-of-python-challenges" class="headerlink" title="It’s Time To Learn PYTHON! (record of python challenges)"></a>It’s Time To Learn PYTHON! (record of python challenges)</h1><h3 id="The-First-Pass"><a href="#The-First-Pass" class="headerlink" title="The First Pass"></a>The First Pass</h3><p>The gibberish displayed on the screen is a passcode which is coded with Caeser cipeher, one of the simplest encryption techniques. From the Wikipedia, we can know that</p><blockquote><p>It is a type of substitution cipher in which each letter in the plaintext is replaced by a letter some fixed number of positions down the alphabet. For example, with a left shift of 3, D would be replaced by A, E would become B, and so on.</p></blockquote><p>So I first wrote a code like this:</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">para = input ()</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> para:</span><br><span class="line">    <span class="keyword">if</span> ord (i) &gt;= ord (<span class="string">"a"</span>) <span class="keyword">and</span> ord (i) &lt;= ord (<span class="string">"z"</span>):</span><br><span class="line">        <span class="keyword">print</span> ((chr)((ord (i) + <span class="number">2</span> - ord (<span class="string">"a"</span>)) % <span class="number">26</span> + ord (<span class="string">"a"</span>)), end = <span class="string">""</span>)</span><br><span class="line">    <span class="keyword">else</span>: <span class="keyword">print</span> (i, end = <span class="string">""</span>)</span><br></pre></td></tr></table></figure><p>Apparently, it is quite cumbersome. After decoding, we can learn from the text that $string.maketrans ()$ is recommanded to be used when facing such problem. So I rewrote the code:</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">intext = <span class="string">"abcdefghijklmnopqrstuvwxyz"</span></span><br><span class="line">outext = <span class="string">"cdefghijklmnopqrstuvwxyzab"</span></span><br><span class="line">trans = str.maketrans (intext, outext);</span><br><span class="line"></span><br><span class="line">para = input ()</span><br><span class="line"><span class="keyword">print</span> (para.translate (trans))</span><br></pre></td></tr></table></figure><p>And the code is simpler now. Follow the tips translated, you only need to apply the encryption technique into the url “map” so that we can get “ocr”. After replacing “map” with “ocr”, we can get to the second pass.</p><h3 id="The-Second-Pass"><a href="#The-Second-Pass" class="headerlink" title="The Second Pass"></a>The Second Pass</h3>]]></content>
+      
+      
+      <categories>
+          
+          <category> AMP Learning </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Python </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>「NOTES」Discrete Mathematical Tools for Computer Science</title>
       <link href="/2021/09/03/COMP2711H_Note/"/>
       <url>/2021/09/03/COMP2711H_Note/</url>
