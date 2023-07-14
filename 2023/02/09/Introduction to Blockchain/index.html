@@ -1,0 +1,1230 @@
+<!DOCTYPE html><html lang="zh-Hans" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Introduction to Blockchain | Colythme</title><meta name="description" content="Lecture 2: Cryptographic Hash Function (Example: SHA256)$\sum$指所有可能出现的字符. $\sum^* &#x3D; \sum^0 \cup \sum^1 \cup …$。上面的数字指的是字符序列长度 $f: \sum^* \rightarrow \sum^n$    map from infinite to finite Hash functio"><meta name="keywords" content="Blockchain"><meta name="author" content="Colythme"><meta name="copyright" content="Colythme"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="https://i.loli.net/2020/07/01/HAkVZw1jYbBezxS.jpg"><link rel="canonical" href="http://colythme.github.io/2023/02/09/Introduction%20to%20Blockchain/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="Introduction to Blockchain"><meta property="og:url" content="http://colythme.github.io/2023/02/09/Introduction%20to%20Blockchain/"><meta property="og:site_name" content="Colythme"><meta property="og:description" content="Lecture 2: Cryptographic Hash Function (Example: SHA256)$\sum$指所有可能出现的字符. $\sum^* &#x3D; \sum^0 \cup \sum^1 \cup …$。上面的数字指的是字符序列长度 $f: \sum^* \rightarrow \sum^n$    map from infinite to finite Hash functio"><meta property="og:image" content="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><meta property="article:published_time" content="2023-02-09T06:02:27.400Z"><meta property="article:modified_time" content="2023-07-14T09:55:53.615Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = '2'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"We didn't find any results for the search: ${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: undefined,
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  bookmark: {
+    message_prev: 'Press',
+    message_next: 'to bookmark this page'
+  },
+  runtime_unit: 'days',
+  runtime: true,
+  copyright: {"limitCount":50,"languages":{"author":"Author: Colythme","link":"Link: ","source":"Source: Colythme","info":"Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source."}},
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"Press","message_next":"to bookmark this page"},"chs_to_cht":"Traditional Chinese Activated Manually","cht_to_chs":"Simplified Chinese Activated Manually","day_to_night":"Dark Mode Activated Manually","night_to_day":"Light Mode Activated Manually","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: true    
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2023-07-14 17:55:53'
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><style type="text/css">#toggle-sidebar {bottom: 80px}</style><meta name="generator" content="Hexo 5.4.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">Loading...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="https://i.loli.net/2020/07/01/VbugJ9i4FUkIsoE.jpg" onerror="onerror=null;src='/img/404_2.jpeg'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">Articles</div><div class="length_num">87</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">Tags</div><div class="length_num">78</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">Categories</div><div class="length_num">23</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archive</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tag</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Category</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> Repose</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">Catalog</div><div class="sidebar-toc__progress"><span class="progress-notice">You've read</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Lecture-2-Cryptographic-Hash-Function-Example-SHA256"><span class="toc-number">1.</span> <span class="toc-text">Lecture 2: Cryptographic Hash Function (Example: SHA256)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Commitment-Scheme"><span class="toc-number">1.0.1.</span> <span class="toc-text">Commitment Scheme</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lecture-3-Merkle-Trees"><span class="toc-number">2.</span> <span class="toc-text">Lecture 3: Merkle Trees</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Problem"><span class="toc-number">2.0.1.</span> <span class="toc-text">Problem</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Solution"><span class="toc-number">2.0.2.</span> <span class="toc-text">Solution</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lecture-4-Symmetric-Encryption"><span class="toc-number">3.</span> <span class="toc-text">Lecture 4: Symmetric Encryption</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lecture-5-Basic-Number-Theory-and-ElGamal-Encryption"><span class="toc-number">4.</span> <span class="toc-text">Lecture 5: Basic Number Theory and ElGamal Encryption</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Fermat%E2%80%99s-little-theorem"><span class="toc-number">4.0.1.</span> <span class="toc-text">Fermat’s little theorem</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Computing-Primitive-Roots"><span class="toc-number">4.0.2.</span> <span class="toc-text">Computing  Primitive Roots</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Modular-Multiplicative-Inverse"><span class="toc-number">4.0.3.</span> <span class="toc-text">Modular Multiplicative Inverse</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%87%8D%E5%9B%9E%E6%AD%A3%E9%A2%98"><span class="toc-number">4.0.4.</span> <span class="toc-text">重回正题</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lecture-6-The-RSA-Cryptosystem"><span class="toc-number">5.</span> <span class="toc-text">Lecture 6: The RSA Cryptosystem</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lecture-7-Digital-Signatures"><span class="toc-number">6.</span> <span class="toc-text">Lecture 7: Digital Signatures</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Digital-Signatures"><span class="toc-number">6.0.1.</span> <span class="toc-text">Digital Signatures</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lecture-8-Transactions-and-Double-spending"><span class="toc-number">7.</span> <span class="toc-text">Lecture 8: Transactions and Double-spending</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Creating-a-Cryptocurrency-Public-Keys-as-Identities"><span class="toc-number">7.1.</span> <span class="toc-text">Creating a Cryptocurrency (Public Keys as Identities)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Make-Transactions"><span class="toc-number">7.1.1.</span> <span class="toc-text">Make Transactions</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#How-to-verify-a-transaction"><span class="toc-number">7.1.2.</span> <span class="toc-text">How to verify a transaction?</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Double-Spending"><span class="toc-number">7.2.</span> <span class="toc-text">Double Spending</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lecture-9-A-Centralized-Ledger"><span class="toc-number">8.</span> <span class="toc-text">Lecture 9: A Centralized Ledger</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Viewpoint-of-a-user"><span class="toc-number">8.0.0.1.</span> <span class="toc-text">Viewpoint of a user:</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Viewpoint-of-a-node"><span class="toc-number">8.0.0.2.</span> <span class="toc-text">Viewpoint of a node:</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Viewpoint-of-the-bank"><span class="toc-number">8.0.0.3.</span> <span class="toc-text">Viewpoint of the bank</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Property"><span class="toc-number">8.0.0.4.</span> <span class="toc-text">Property</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lecture-10-Bitcoin-and-Proof-of-Work"><span class="toc-number">9.</span> <span class="toc-text">Lecture 10: Bitcoin and Proof of Work</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Decentralization"><span class="toc-number">9.1.</span> <span class="toc-text">Decentralization</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#How-to-extend-the-chain-while-preserving-consensus-for-honest-nodes"><span class="toc-number">9.1.1.</span> <span class="toc-text">How to extend the chain, while preserving consensus for honest nodes?</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Property-1"><span class="toc-number">9.1.1.1.</span> <span class="toc-text">Property</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Hash-based-Proof-of-Work-PoW"><span class="toc-number">9.1.2.</span> <span class="toc-text">Hash-based Proof of Work (PoW)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#How-the-whole-protocol-works"><span class="toc-number">9.1.3.</span> <span class="toc-text">How the whole protocol works</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Viewpoint-of-nodes"><span class="toc-number">9.1.4.</span> <span class="toc-text">Viewpoint of nodes</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#What-happens-if-two-valid-blocks-are-found-at-approximately-the-same-time"><span class="toc-number">9.2.</span> <span class="toc-text">What happens if two valid blocks are found at approximately the same time?</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lecture-11-Mining-Rewards-and-Forks"><span class="toc-number">10.</span> <span class="toc-text">Lecture 11: Mining Rewards and Forks</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#How-to-cerate-new-units-of-currency"><span class="toc-number">10.1.</span> <span class="toc-text">How to cerate new units of currency</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Why-should-anyone-be-a-miner"><span class="toc-number">10.2.</span> <span class="toc-text">Why should anyone be a miner</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Why-should-a-miner-mines-a-non-empty-block"><span class="toc-number">10.3.</span> <span class="toc-text">Why should a miner mines a non-empty block</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Transaction-fees-%E5%8F%AF%E4%BB%A5%E7%90%86%E8%A7%A3%E4%B8%BA%E6%89%8B%E7%BB%AD%E8%B4%B9"><span class="toc-number">10.3.1.</span> <span class="toc-text">Transaction fees (可以理解为手续费)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Double-spending-attack"><span class="toc-number">10.4.</span> <span class="toc-text">Double-spending attack</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#First-attack-Immediate-double-spending"><span class="toc-number">10.4.1.</span> <span class="toc-text">First attack: Immediate double-spending</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Solution-1"><span class="toc-number">10.4.1.1.</span> <span class="toc-text">Solution</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Second-attack-Double-spending-in-a-fork"><span class="toc-number">10.4.2.</span> <span class="toc-text">Second attack: Double-spending in a fork</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#What-the-merchant-sees"><span class="toc-number">10.4.2.1.</span> <span class="toc-text">What the merchant sees</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Solution-2"><span class="toc-number">10.4.2.2.</span> <span class="toc-text">Solution</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Adjusting-difficulty"><span class="toc-number">10.5.</span> <span class="toc-text">Adjusting difficulty</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lecture-12-Centralization-and-Scripts"><span class="toc-number">11.</span> <span class="toc-text">Lecture 12: Centralization and Scripts</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Bitcoin%E2%80%99s-honesty-assumption"><span class="toc-number">11.1.</span> <span class="toc-text">Bitcoin’s honesty assumption</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#What-if-the-assumption-does-not-hold"><span class="toc-number">11.1.1.</span> <span class="toc-text">What if the assumption does not hold?</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Scripts"><span class="toc-number">11.2.</span> <span class="toc-text">Scripts</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Micropayments-Scripts%E7%9A%84%E7%94%A8%E5%A4%84"><span class="toc-number">11.2.1.</span> <span class="toc-text">Micropayments (Scripts的用处)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lecture-13-Two-way-Payment-Channels"><span class="toc-number">12.</span> <span class="toc-text">Lecture 13: Two-way Payment Channels</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#One-way-Payment-Channel"><span class="toc-number">12.1.</span> <span class="toc-text">One-way Payment Channel</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Properties"><span class="toc-number">12.1.1.</span> <span class="toc-text">Properties</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Two-way-Payment-Channel"><span class="toc-number">12.2.</span> <span class="toc-text">Two-way Payment Channel</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Simple-Solution"><span class="toc-number">12.2.1.</span> <span class="toc-text">Simple Solution</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Second-Attempt-Let-money-flow-in-both-directions"><span class="toc-number">12.2.2.</span> <span class="toc-text">Second Attempt: Let money flow in both directions</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#One-way-Channel-with-Refunds"><span class="toc-number">12.2.3.</span> <span class="toc-text">One-way Channel with Refunds</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Two-way-Channel"><span class="toc-number">12.2.4.</span> <span class="toc-text">Two-way Channel</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lecture-15-Escrows-and-Ethereum-like-Smart-Contracts"><span class="toc-number">13.</span> <span class="toc-text">Lecture 15: Escrows and Ethereum-like Smart Contracts</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Next-step-Remove-Carol-from-the-protocol"><span class="toc-number">13.0.1.</span> <span class="toc-text">Next step: Remove Carol from the protocol</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Solution-Change-the-deposit-Tx"><span class="toc-number">13.0.2.</span> <span class="toc-text">Solution: Change the deposit $Tx$</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Problem-with-Bitcoin-Scripts"><span class="toc-number">13.1.</span> <span class="toc-text">Problem with Bitcoin Scripts</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Ethereum-like-Smart-Contract"><span class="toc-number">13.2.</span> <span class="toc-text">Ethereum-like Smart Contract</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lecture-14-Basics-of-Solidity-and-Ethereum-Smart-Contracts"><span class="toc-number">14.</span> <span class="toc-text">Lecture 14: Basics of Solidity and Ethereum Smart Contracts</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Gas-amp-Fees"><span class="toc-number">14.1.</span> <span class="toc-text">Gas &amp; Fees</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lecture-19-Secret-Sharing"><span class="toc-number">15.</span> <span class="toc-text">Lecture 19: Secret Sharing</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Commitment-Schemes"><span class="toc-number">15.1.</span> <span class="toc-text">Commitment Schemes</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Random-Number-Genenration"><span class="toc-number">15.1.1.</span> <span class="toc-text">Random Number Genenration</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Random-Number-Generation"><span class="toc-number">15.2.</span> <span class="toc-text">Random Number Generation</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Secret-Sharing"><span class="toc-number">15.2.1.</span> <span class="toc-text">Secret Sharing</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lecture-20-Random-Number-Generation-via-Verifiable-Delay-Functions"><span class="toc-number">16.</span> <span class="toc-text">Lecture 20: Random Number Generation via Verifiable Delay Functions</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Ideal-Protocol"><span class="toc-number">16.0.1.</span> <span class="toc-text">Ideal Protocol</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Properties-of-Commmit-hash-function"><span class="toc-number">16.0.2.</span> <span class="toc-text">Properties of Commmit (hash function)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VDF-Verifiable-Delay-Function"><span class="toc-number">16.1.</span> <span class="toc-text">VDF: Verifiable Delay Function</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VDF-Based-RNG"><span class="toc-number">16.2.</span> <span class="toc-text">VDF-Based RNG</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lecture-21-Mixing-and-Blind-Signatures"><span class="toc-number">17.</span> <span class="toc-text">Lecture 21: Mixing and Blind Signatures</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#How-to-Keep-the-IDs-Private"><span class="toc-number">17.1.</span> <span class="toc-text">How to Keep the IDs Private?</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#First-Idea-Money-Landering"><span class="toc-number">17.1.1.</span> <span class="toc-text">First Idea: Money Landering</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Second-Idea-Use-a-Mixer"><span class="toc-number">17.1.2.</span> <span class="toc-text">Second Idea: Use a Mixer</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Blind-Signatures"><span class="toc-number">17.2.</span> <span class="toc-text">Blind Signatures</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Idea-Issue-Banknotes"><span class="toc-number">17.2.1.</span> <span class="toc-text">Idea: Issue Banknotes</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#How-to-avoid-double-spending"><span class="toc-number">17.2.1.1.</span> <span class="toc-text">How to avoid double-spending</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RSA-Blind-Signatures"><span class="toc-number">17.3.</span> <span class="toc-text">RSA Blind Signatures</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Goldwasser-Micali-Cryptosystem"><span class="toc-number">18.</span> <span class="toc-text">Goldwasser-Micali Cryptosystem</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Probabilistic-Encryption-amp-Signature"><span class="toc-number">18.1.</span> <span class="toc-text">Probabilistic Encryption &amp; Signature</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Goldwasser-Micali-Cryptosystem-1"><span class="toc-number">18.1.1.</span> <span class="toc-text">Goldwasser-Micali Cryptosystem</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Key-Generation"><span class="toc-number">18.1.1.1.</span> <span class="toc-text">Key Generation</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Decryption"><span class="toc-number">18.1.1.2.</span> <span class="toc-text">Decryption</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Homomorphic-Encryption"><span class="toc-number">18.1.1.3.</span> <span class="toc-text">Homomorphic Encryption</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ElGamal-Cryptosystem"><span class="toc-number">18.2.</span> <span class="toc-text">ElGamal Cryptosystem</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Zero-Knowledge-Proofs"><span class="toc-number">19.</span> <span class="toc-text">Zero-Knowledge Proofs</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#NP"><span class="toc-number">19.1.</span> <span class="toc-text">NP</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Example-1"><span class="toc-number">19.1.1.</span> <span class="toc-text">Example 1.</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Zero-Knowledge-Proof"><span class="toc-number">19.2.</span> <span class="toc-text">Zero-Knowledge Proof</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Prove-zero-knowledge-property"><span class="toc-number">19.2.1.</span> <span class="toc-text">Prove zero-knowledge property</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Example"><span class="toc-number">19.2.2.</span> <span class="toc-text">Example</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Example-1"><span class="toc-number">19.2.3.</span> <span class="toc-text">Example</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Example-2"><span class="toc-number">19.2.4.</span> <span class="toc-text">Example</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Example-3"><span class="toc-number">19.2.5.</span> <span class="toc-text">Example</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Example-4"><span class="toc-number">19.2.6.</span> <span class="toc-text">Example</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Example-5"><span class="toc-number">19.2.7.</span> <span class="toc-text">Example</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lecture-25-Be-Vindictive"><span class="toc-number">20.</span> <span class="toc-text">Lecture 25: Be Vindictive</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#transfer-send-call"><span class="toc-number">20.1.</span> <span class="toc-text">transfer, send, call</span></a></li></ol></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">Colythme</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archive</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tag</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Category</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> Repose</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">Introduction to Blockchain</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2023-02-09T06:02:27.400Z" title="Created 2023-02-09 14:02:27">2023-02-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2023-07-14T09:55:53.615Z" title="Updated 2023-07-14 17:55:53">2023-07-14</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Web3/">Web3</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="Lecture-2-Cryptographic-Hash-Function-Example-SHA256"><a href="#Lecture-2-Cryptographic-Hash-Function-Example-SHA256" class="headerlink" title="Lecture 2: Cryptographic Hash Function (Example: SHA256)"></a>Lecture 2: Cryptographic Hash Function (Example: SHA256)</h2><p>$\sum$指所有可能出现的字符. $\sum^* = \sum^0 \cup \sum^1 \cup …$。上面的数字指的是字符序列长度</p>
+<p>$f: \sum^* \rightarrow \sum^n$    <em>map from infinite to finite</em></p>
+<p>Hash function characteristic:</p>
+<ul>
+<li><p><strong>Collision-resistance</strong>: It is hard to find $x, y \in \sum^*$, s.t., $x \neq y$ and $f(x) = f(y)$</p>
+</li>
+<li><p><strong>Hiding</strong>: Given a hash value $h$, it is hard to find same $x$ s.t. $f(x) = h$</p>
+</li>
+<li><p><strong>Puzzle friendliness</strong></p>
+</li>
+</ul>
+<hr>
+<p><em>Problem</em>: Finding Files</p>
+<p>I have huge files $F_1, F_2, …, F_n$. Given a new file, find if it exists in my files ($\exist F_i, F_i = F_{new}$)</p>
+<p>Solution: Save $Hash(F_i)$ the same time when saving $F_i$</p>
+<hr>
+<p><em>Problem</em>: Ledger with hash pointers</p>
+<p>node $o_1$ save the pointer to $Hash(o_2)$, then I can find $o_2$ by table. But it need to guarantee the immutability or if $o_2$ changes, we can no longer access it.</p>
+<p>Create a link list of all the transactions.</p>
+<p>$Tx_1$. When another transaction occurs, $Tx_1 \leftarrow Tx_2$. Bank creates $Tx_2$, and points to $Tx_1$. Then bank sends me an email of the information $Tx_2$  and hash of $Tx_2$. The pointer is $Hash (Tx_1)$. 这可以用来证明你进行了$Tx_2$，因为可以根据指针追溯到最本源的交易。</p>
+<p>当银行想要更改$Tx_1$，那么$Hash (Tx_1)$需要改变，接着因为$Tx_2$ saves $Hash (Tx_1)$, $Hash (Tx_2)$ has to change, therefore $Tx_3$ has to change…</p>
+<hr>
+<h4 id="Commitment-Scheme"><a href="#Commitment-Scheme" class="headerlink" title="Commitment Scheme"></a>Commitment Scheme</h4><p>Players $p_1, p_2, …, p_n$ have bids $b_1, b_2, …, b_n$ respectively</p>
+<p>rule: No other ppl can see my bid and I can no longer change my bid.</p>
+<p>Assume the cheater is powerful enough, he can know any bid of players.</p>
+<p>We need to design a protocol to prevent cheating:</p>
+<ul>
+<li>Make sure the highest $b_i$ is found (需要知道谁胜出)</li>
+<li>No player can change their bid after seeing other players’ bids.</li>
+<li>Auditability: make sure every player can check through the protocol</li>
+</ul>
+<p><em>Solution</em>:</p>
+<p>Hash function: $h$</p>
+<p>Step 1: Every player computes his hash $h_i = h (b_i)$</p>
+<p>Step 2 (commit): $p_i$ publishes $h_i$</p>
+<p>Step 3 (reveal): After everyone commits, $p_i$ publishes $b_i$</p>
+<p>保证所有人都commit且reveal，否则出局</p>
+<p>Dealer可以根据reveal的$b_i$ compute $h_i$，防止有人两个publish的不是一个东西</p>
+<p><em>Problem</em>:</p>
+<ul>
+<li>When doing hashing, the domain should be larger (不然domain太小容易被猜出来)</li>
+</ul>
+<p><em>Improvement</em>:</p>
+<p>Step 1: Every player $p_i$ chooses a random nonce $n_i$. $h_i = h (b_i | n_i)$</p>
+<p>Step 2 (commit): $p_i$ publishes $h_i$</p>
+<p>Step 3 (reveal): After everyone commits, $p_i$ publishes $b_i$ <strong>and</strong> $n_i$</p>
+<p>但是dealer不是必须的，可以做成decentralized的。</p>
+<hr>
+<h2 id="Lecture-3-Merkle-Trees"><a href="#Lecture-3-Merkle-Trees" class="headerlink" title="Lecture 3: Merkle Trees"></a>Lecture 3: Merkle Trees</h2><hr>
+<h4 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h4><p>I am running a bank. The bank has two branches, HK and SH.</p>
+<p>Let’s say there’s no internet but has computers and hash function.</p>
+<p>Have a bunch of transactions (deposit) at HK branch, then they want ot get their money back in SH branch with their <em>deposit proof</em></p>
+<p>I can just send <strong>a short message</strong> from HK to SH to <strong>prove the deposit proof is true</strong> and 钱没被取出来过</p>
+<p>And any leak of the short message should not have someone know the information about the deposits.</p>
+<p><em>Assume the original channel is unsafe and expensive. 并且可能存在A存钱，但是B会copy A的存折去取钱的情况</em></p>
+<h4 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h4><p>First step, be clear about the properties.</p>
+<p><strong>Properties:</strong></p>
+<ul>
+<li>Every deposit can be taken back</li>
+<li>No one can reclaim the same deposit twice</li>
+<li>Message $m$ going from HK to SH is really short</li>
+<li>$m$ does not leak any data</li>
+<li>Every depositor $i$ receives a proof $p_i$</li>
+<li>It is possible to verify every $p_i$ using $m$</li>
+<li><em>Additional property: short proof</em></li>
+<li><em>Additional property: privacy for depositor (一个depositor不会看到其他depositor的内容)</em></li>
+</ul>
+<p>Suppose we have a ledger(账本)</p>
+<p>When Alice deposits, she gives me a random number $n_1$. So Bob and Carol $n_2, n_3$ respectively. 此时我们将每个transaction的内容(name, amount of money…) hash起来而不是明确地表示出来，即$Tx_1$存储的是hash (Alice || \$100 || $n_1$)，那么此时就无法读取别人的内容了。</p>
+<p>那么此时HK只需要向SH传输hash ($Tx_3$)，然后Carol带着$Tx_3$去SH取钱，SH计算$Tx_3$的hash值，并与$m$进行比对，同时Carol再提供自己的name以及amount of money，SH再将这些信息进行hash，并与$Tx_3$内的hash (Carol || \$150 || $n_3$)进行比对，则可以确定这笔钱确实是Carol的。</p>
+<p>那么对于Alice，她则需要提供$Tx_3, Tx_2, Tx_1$，SH先分别验证$Tx_3, Tx_2$的真实性，最后通过Alice提供的name与amount of money数据来匹配$Tx_1$。</p>
+<img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230524120323084.png" alt="image-20230524120323084" style="zoom:33%;" />
+
+<p>可以发现，上述过程每个人都不知道其他人的transaction的具体内容，都是hash。  </p>
+<p>However, 当transaction很多的时候，Alice要存的内容就非常多了，要存所有人的数据，那怎么解决这个问题呢？需要用Merkle Trees。</p>
+<p>![image-20230311162808715](/Users/colythme/Library/Application Support/typora-user-images/image-20230311162808715.png)</p>
+<p>Merkle Trees正如图中所示，实际上就是一个二叉搜索树，将transaction的hash存作叶子结点的value，然后两个子节点的父节点的value是两个字节的value的hash，即比如子节点$l_1, l_2$，其father node的value即为$hash (l_1 || l_2)$。此时需要传输的message $m$即为根节点的value。</p>
+<p>那么现在的问题就是，我们并没有传输整棵树，要怎么traverse这个Merkle Tree来判断$l_1$是否存在于树中呢？所以实际上，Alice需要给定$b_1, b_2, l_1, l_2, D_1$，SH将$b_1, b_2$进行hash，来判断他们是不是$m$的子节点；同样的，她需要提供$l_1, l_2$来判断他们是不是$b_1$的子节点。这样才能最终判断$D_1$在不在树中。</p>
+<p>那么此时对于一个depositor，他需要存储的最多信息的长度就是$2\log n$</p>
+<h2 id="Lecture-4-Symmetric-Encryption"><a href="#Lecture-4-Symmetric-Encryption" class="headerlink" title="Lecture 4: Symmetric Encryption"></a>Lecture 4: Symmetric Encryption</h2><p>Scenario: two people <em>Alice</em> &amp; <em>Bob</em>. They want to communicate, but only with unsafe channel. Someone else may can read the messages. Suppose the ‘someone else’ is <em>Eve</em>.</p>
+<p>Send a message $m$. The encrypted message $e$.</p>
+<p>那么实际上Eve能看到的就是encrypted message $e$</p>
+<p>在课程中红色标记的表示private，蓝色的是public</p>
+<p><strong>Definition:</strong></p>
+<p>A key $k \in \sum^*$ which is only known to Alice &amp; Bob.</p>
+<p>Alice knows a function $Enc_k: \sum^* \rightarrow \sum^*$ (编码器encrypte function)</p>
+<p>Bobo knows a function $Dec_k: \sum^* \rightarrow \sum^*$ (解码器decrypte function)</p>
+<p>$\forall m \in \sum^*, Dec_k (Enc_k (m)) = m$ (即解码编码后的message会得到原信息)</p>
+<p>这叫做<em>symmetric encryption</em></p>
+<p>在当前时代下，我们认为这个编码器和解码器的function都是已知的，唯一未知的是key $k$</p>
+<p><strong>One-time Pad:</strong></p>
+<p>因为message实际上是二进制的，我们用$\oplus$表示xor，使得 $e = Enc_k (m) = m \oplus k$，$Dec_k (e) = e\oplus k$</p>
+<p>$Dec_k (Enc_k (m)) = Dec_k (m \oplus k) = m$</p>
+<p><strong>Property:</strong></p>
+<p>Eve cannot figure out any message in $m$ from $e$, even one bit of $m$.</p>
+<p><strong>Security Analysis:</strong></p>
+<p>How to show Eve cannot find anything about $m$?</p>
+<p>Eve sees $e$, $|e| = n$</p>
+<p>For evey possible message of length $n$, there exists key $k_m \in \sum^n$, $Enc_k (m) = e$，此时 $k_m = m \oplus e$。这个性质是要保证他不是一对一映射，也就是说我拿到一个$e$，但是他有很多个可能的$m$和$k_m$的组合，以至于我几乎没法通过枚举猜出来。</p>
+<p>但是，do not reuse the keys。因为比如我发两个message，$e_1 = m_1 \oplus k, e_2 = m_2 \oplus k$，那么Eve通过计算$e_1 \oplus e_2 = m_1 \oplus m_2$，那么Eve虽然不知道具体信息，但是可以gain some information about the messages，之后便可以通过枚举等方法尝试，所以是不那么safe的。</p>
+<hr>
+<p><strong>Key Exchange</strong></p>
+<p>首先Scenario和上面差不多。还是Alice，Bob传输message，Eve来intercept。</p>
+<p>Alice has a secret $a$, Bob has a secret $b$. 他们想相互传输（exchange）secret。</p>
+<p>他们目前想通过加密函数来互相传输以至于不被窃听。</p>
+<ul>
+<li>Alice computes $f(a)$ and sends it to Bob</li>
+<li>Bob computes $f(b)$ and sends it to Alice</li>
+<li>此时Alice knows $a, f(b)$，Bob knows $b, f(a)$，Eve knows $f(a), f(b)$</li>
+<li>那么此时，我们需要解决的就是，define $k$ to be a value that it is easy to compute $b$ by $a ~ \&amp; ~ f(b)$, or compute $a$ by $b ~ \&amp; ~ f(a)$, but impossible to compute $a$ or $b$ by $f(a) ~ \&amp; ~ f(b)$</li>
+<li>所以实际上Alice和Bob还额外知道一个$k$</li>
+</ul>
+<p>这个算法叫做Diffie-Hellman Merkle Exchange</p>
+<p><strong>DH Exchange:</strong></p>
+<ul>
+<li><p>Alice or Bob chooses a large prime number $p$ (这个$p$是public的) and sends it over。这个$p$在二进制下要尽可能长，要比你可能发送的最长信息的长度还要长。</p>
+</li>
+<li><p>同时他们再choose一个number $g \in \{0, …, p - 1\}$ s.t. $\{g^0, g^1, g^2, …, g^{p - 2}\} = \{1, 2, …, p - 1\}$。也将这个$g$相互发送。</p>
+<p>  这个 $g$ 叫做<em>primitive root</em></p>
+</li>
+<li><p>Alice choose a secret $a \in \{0, 1, …, p - 2\}$</p>
+<p>  Bob chooses another secret $b \in \{0, 1, …, p - 2\}$</p>
+</li>
+<li><p>Alice computes $g^a \mod p$ and sends it to Bob</p>
+<p>  Bob computes $g^b \mod p$ and sends it to Alice</p>
+</li>
+<li><p>Alice computes $k = (g^b)^a = g^{ab} \mod p$</p>
+<p>  Bob computes $k = (g^a)^b = g^{ab} \mod p$</p>
+</li>
+</ul>
+<p>Alice and Bob compute the shared secret they can use it as an encryption key, known only to them, for sending messages across the same open communications channel.</p>
+<p>Now eve knows $p, g, g^a, g^b$ but needs to compute $k = g^{ab} \mod p$</p>
+<h2 id="Lecture-5-Basic-Number-Theory-and-ElGamal-Encryption"><a href="#Lecture-5-Basic-Number-Theory-and-ElGamal-Encryption" class="headerlink" title="Lecture 5: Basic Number Theory and ElGamal Encryption"></a>Lecture 5: Basic Number Theory and ElGamal Encryption</h2><h4 id="Fermat’s-little-theorem"><a href="#Fermat’s-little-theorem" class="headerlink" title="Fermat’s little theorem"></a>Fermat’s little theorem</h4><p>$a^{p - 1} \equiv 1 \pmod p, a \in [1, p - 1]$</p>
+<h4 id="Computing-Primitive-Roots"><a href="#Computing-Primitive-Roots" class="headerlink" title="Computing  Primitive Roots"></a>Computing  Primitive Roots</h4><p>$p$ is a large prime number</p>
+<p>find $g$ s.t. $\{g^0, g^1, …, g^{p - 2}\} = \{1, 2, …, p - 1\}$</p>
+<p><strong>How to check if $g$ a primitive root?</strong></p>
+<p>compute $g^0, g^1, …$ until a cycle is found. 但是显然，当 $p$ 很大的时候，是不可行的。</p>
+<p>$o(g)$ = length of the cycle of powers of $g$ = smallest positive $i$ s.t. $g^i = 1 \pmod p$</p>
+<p>我们需要证明的是，$o(g) = p -1$，而不是$o(g) &lt; p - 1$。Apparently, 不管在什么情况下， $o(g) | p - 1$</p>
+<p>facterize: $p - 1 = q_1^{\alpha_1}q_2^{\alpha_2}…q_r^{\alpha_r}$</p>
+<p>那么实际上 $g$ 若不是primitive root的情况只有 $o(g) | \frac{p - 1}{q_1} <del>\text{or}</del> o(g) | \frac{p - 1}{q_2} <del>\text{or}</del> … $，因为这说明$o(g)$肯定小于$p - 1$。此时只需检查是否$g^{\frac{p - 1}{q_1}} \equiv 1 \pmod {p - 1} <del>\text{or}</del> g^{\frac{p - 1}{q_2}} \equiv 1 \pmod {p - 1} <del>\text{or}</del> …$即可，若其中一个同余1，则说明cycle提前结束了。</p>
+<p><strong>Fast Modular Exponentiation</strong></p>
+<p>接下来我们需要考虑如何compute $a^b <del>\text{mod}</del> c$</p>
+<p>快速幂</p>
+<p>现在则要回归最初始的问题——怎么找primitive root $g$？</p>
+<p>Method: Choose a random value $g$, then check if it is a primitive root.</p>
+<p>为什么这个随机算法可行呢？因为原根有很多个。I know there is at least one primitive root $g$，假设我们现在随机选了个数，他是$g^i$， 并且 if $i \perp p - 1$ then 我通过枚举 $i$ 来循环 $g^i$，最终会把所有数都循环一遍。</p>
+<p>（找原根这部分目前没太懂，需补）</p>
+<h4 id="Modular-Multiplicative-Inverse"><a href="#Modular-Multiplicative-Inverse" class="headerlink" title="Modular Multiplicative Inverse"></a>Modular Multiplicative Inverse</h4><p>Fermat: $a \neq 0 \pmod p \Rightarrow a^{p - 1} \equiv 1 \pmod p$</p>
+<p>which means $a \cdot a^{p - 2} \equiv 1 \pmod p$，这说明 $a^{p - 2}$ 是 $a$ 的乘法逆元 $\pmod p$</p>
+<p><strong>How to compute $a^{- 1} \text{mod} ~ n$ ?</strong></p>
+<p>If gcd (a, n) $\neq$ 1, then $a$ has no inverse.</p>
+<h4 id="重回正题"><a href="#重回正题" class="headerlink" title="重回正题"></a>重回正题</h4><p>现在我们假设Alice或者Bob其中一人是offline的，即不需要一直online等待别人sending message</p>
+<p>为什么会有这个问题呢？因为Alice有$p, g$数据，而Bob的$p, g$数据是Alice发给他的，所以当Alice offline时，Bob就没法decode发来的message了</p>
+<p>Process:</p>
+<ul>
+<li>Alice generates $p, g, a, g^a$ and <strong>broadcast</strong> $(p, g, g^a)$。因为此时Alice不知道谁会要与她交流，所以是broadcast。之后，Alice turns her computer off (offline)</li>
+<li>现在Bob want to send a message to Alice。Bob generates a random secret $b$ and computes $g^{ab} = (g^a)^b$。</li>
+<li>Bob sends $(g^b, e = m + g^{ab})$ to Alice …之后跟上面的操作一样就好了，因为Alice已经能算出 $k$ 了</li>
+<li>When Alice is back online, Alice computes $g^{ab} = (g^b)^a$</li>
+<li>Alice computes $m = e - g^{ab}$</li>
+</ul>
+<p>注意，上述过程都是基于$\text{mod} ~ p$的情况</p>
+<h2 id="Lecture-6-The-RSA-Cryptosystem"><a href="#Lecture-6-The-RSA-Cryptosystem" class="headerlink" title="Lecture 6: The RSA Cryptosystem"></a>Lecture 6: The RSA Cryptosystem</h2><p><strong>Requirements:</strong></p>
+<p>I need to have two functions: an encryption function $Enc_k: \sum^* \rightarrow \sum^<em>$ &amp; a decryption function $Dec_k: \sum^</em> \rightarrow \sum^*$</p>
+<p>And I also need a key pair $(e, d)$。这里$e$是public，$d$是private。</p>
+<p>同时也需要满足，$\forall m, Dec_d (Enc_e (m)) = m$</p>
+<p><strong>Security Requirements:</strong></p>
+<p>If the adversary knows $e$ &amp; $Enc_e(m)$ &amp; $Enc$ algorithm &amp; $Dec$ algorithm, they cannot find any information about $m$(private).</p>
+<hr>
+<p><strong>Rivest-Shamir-Adleman (RSA)</strong></p>
+<p>前提：I have a number $n$ and all calculations are $\text{mod} ~ n$. And $e, d \in [0, n)$</p>
+<p>$Enc_e (m) = m^e \mod n$</p>
+<p>$Dec_d (m’) = m’^d \mod n$。这里$m’$代指加密后message</p>
+<p>$Des_d (Enc_e (m)) = Dec_d (m^e) = m^{ed}$</p>
+<p>所以我们现在需要考虑的是，how do I generate key $e, d$，s.t.，$m \equiv m^{ed} \pmod n$</p>
+<p><em>Key Generation:</em></p>
+<p>What happens if $n$ is prime?</p>
+<p>$\forall m, m^{ed} \equiv m \pmod n \Leftrightarrow \forall m, m^{ed - 1} \equiv 1 \pmod n$</p>
+<p>要满足上面的式子，只需要使得 $n - 1 | ed - 1$ 即可 (by Fermat’s Little Theorem)</p>
+<p>$ed - 1 \equiv 0 \pmod {n - 1} \Leftrightarrow ed \equiv 1 \pmod{n - 1} \Leftrightarrow d \equiv e^{- 1} \pmod{n - 1}$</p>
+<p><em>What does Eve see?</em></p>
+<p>$e, n, m^e$.</p>
+<p>Eve can compute $d = e^{- 1} \mod{n - 1}$. Then Eve can decrypte the message like us: $m = Dec_d (m^e)$</p>
+<p>那么会造成这种结果的原因实际上就是计算key $d$的成本太低了，只需要知道$n - 1$就行，所以我们需要修改这个。也就是说，单纯让$n$是个prime number太简单了。</p>
+<p><em>Key Generation (Attempt 2)</em></p>
+<p>Alice chosses two large primes $p, q$ and set $n = pq$. 这里$n$是public，但是$p, q$是private。</p>
+<p>I need to generate $d, e$, s.t., $\forall m, m^{ed} \equiv m \pmod n$</p>
+<p>这里我们需要用到Chinese Remainder Theorem</p>
+<p>根据CRT，可以得到<br>$$<br>m^{ed} \equiv m x\pmod n \Rightarrow<br>\left\{<br>\begin{aligned}<br>m^{ed} \equiv m \pmod p \<br>m^{ed} \equiv m \pmod q<br>\end{aligned}<br>\right.<br>\Leftrightarrow<br>\left\{<br>\begin{aligned}<br>m^{ed - 1} \equiv 1 \pmod p \<br>m^{ed - 1} \equiv 1 \pmod q<br>\end{aligned}<br>\right.<br>$$<br>We make sure that $ed - 1$ is a multiple of both $p - 1$ and $q - 1$.</p>
+<p>所以我们可以直接计算$l = lcm (p - 1, q - 1)$. 之后Alice chooses $e, d$, s.t., $l | ed - 1$</p>
+<p>推导一下，得到$ed - 1 \equiv 0 \pmod l \Leftrightarrow e = d^{- 1} \mod l$</p>
+<p><em>What does Eve see?</em></p>
+<p>$e, n, m^e$</p>
+<p>此时我们的$d = e^{- 1} \mod l$。会发现此时Eve不知道$p, q$，所以她没法知道$l$。但是实际上，Eve可以factorize $n$，毕竟$n$就是两个prime的结合，但假若$p, q$足够大，所以此处我们暂且认定Eve cannot find $p, q, l = lcm (p - 1, q - 1), d, m$</p>
+<hr>
+<p><strong>RSA Assumption</strong></p>
+<p>Given $e, n, m^e$, one cannot find $m$.</p>
+<p>We do not have a proof to it, but it actually works.</p>
+<h2 id="Lecture-7-Digital-Signatures"><a href="#Lecture-7-Digital-Signatures" class="headerlink" title="Lecture 7: Digital Signatures"></a>Lecture 7: Digital Signatures</h2><p>In one-time pad, we use our key $k$ only once, or it would be figured out if being multiplely used.</p>
+<p>However, in RSA with key pair $(e, d)$, we always keep them the same.</p>
+<p><strong>Homomorphic property of RSA</strong></p>
+<p>$Enc_e (m_1) \cdot Enc_e (m_2) = Enc_e (m_1 \cdot m_2)$</p>
+<h4 id="Digital-Signatures"><a href="#Digital-Signatures" class="headerlink" title="Digital Signatures"></a>Digital Signatures</h4><p>Definition:</p>
+<p>Alice wants to send messages to Bob in the Internet.</p>
+<p>Meanwhile, Charlie can <strong>change</strong> the message Alice sends in the middle.</p>
+<p>所以问题就是，how can Bob be sure the message is originally from Alice?</p>
+<p>这时Alice除了send message $m$，还要send a signature $sgn(m)$，并且要满足，everyone including Bob is able to verify this signature.</p>
+<p>A signature function $sgn_d: \sum^* \rightarrow \sum^<em>$ with a *</em>secret key** $d$.</p>
+<p>A verification function $ver_e: \sum^* \times \sum^* \rightarrow \{0, 1\}$ with a <strong>public key</strong> $e$. 这里的0，1指的是确认是假的或真的。同时还要有个 $\overline{ver_e}: \sum^* \rightarrow \sum^*$，这个函数是返回originial message来check if it is the same msg用的。</p>
+<p><strong>Validity Property:</strong></p>
+<p>$\forall m, ver_e (m, sgn_d(m)) = 1$</p>
+<p>$\forall m, \overline{ver_e} (sgn_d (m)) = m$</p>
+<p><strong>Security Property:</strong></p>
+<p>Only Alice can sign.</p>
+<p>If Charlie knows $m, e, sgn, \overline{ver}$, he should not be able to compute $sgn_d (m)$.</p>
+<p><strong>RSA Signatures</strong></p>
+<ul>
+<li>Alice creates RSA keys $n = pq, e, d$, s.t., $\forall m, m^{ed} = m \pmod n$</li>
+<li>We assume everyone knows $n, e$</li>
+<li>Alice computes $s = sgn_d (m) = dec_d (m) = m^d$ and sends it to Bob</li>
+<li>Bob verifies Alice’s signature by computing $\overline{ver_e}(s) = enc_e(s) = s^e = m^{ed}$</li>
+</ul>
+<p>If $s$ is really Alice’s signature on $m$, then $s = m^d$ so $m^{de} \equiv m \pmod n$</p>
+<p><em>What does Charlie knows?</em></p>
+<p>$m, m^d, n, e$</p>
+<p>But he cannot forge a signature. Because to forge a signature on $m’$, Charlie must compute $m’^d$, which is the same as decryption (因为Charlie需要解码得到$d$来重新根据自己欲修改的信息$m’$得到$sgn_d(m’)$再发给Bob) which the RSA assumpltion rules out.</p>
+<p><strong>Homomorphic Property</strong></p>
+<p>Alice signs $m_1, m_2$ and sends $sgn_d (m_1) = m_1^d, sgn_d (m_2) = m_2^d$ to Bob.</p>
+<p>Charlie knows $m_1^d$ and $m_2^d$, so he comptues $(m_1m_2)^d$.</p>
+<p>$\forall m_1, m_2, sgn_d(m_1) \cdot sgn_d(m_2) = sgn_d (m_1 \cdot m_2)$</p>
+<p><strong>Simple and important:</strong> Never sign a message $m$. Always sign $hash (m)$.</p>
+<p>这么说是因为Charlie肯定能得到$sgn_d (m_1 \cdot m_2)$，我们需要保证他得到的东西必须是个garbage message，故要sign $hash (m)$而不是$m$。</p>
+<h2 id="Lecture-8-Transactions-and-Double-spending"><a href="#Lecture-8-Transactions-and-Double-spending" class="headerlink" title="Lecture 8: Transactions and Double-spending"></a>Lecture 8: Transactions and Double-spending</h2><p>现在将上面讲的两个做一个整合。还是假设Alice send to Bob，中间有Eve和Charlie分别劫持message和digital signature</p>
+<p>![image-20230305201636691](/Users/colythme/Library/Application Support/typora-user-images/image-20230305201636691.png)</p>
+<p>Alice wants to send $m$ o Bob:</p>
+<ul>
+<li>Alice computes the signature $s = sgn_{d_2} (hash (m))$</li>
+<li>Alice encrypts $(s, m)$ to obtain $x = Enc_{e_3} (s, m)$ and sends $x$ to Bob</li>
+<li>Bob decrypts $x$ to get $Dec_{d_3}(x) = (s, m)$</li>
+<li>Bob verifies Alice’s signature by checking if $\overline{ver_{e2} (s)}$ equals to $hash (m)$</li>
+</ul>
+<h3 id="Creating-a-Cryptocurrency-Public-Keys-as-Identities"><a href="#Creating-a-Cryptocurrency-Public-Keys-as-Identities" class="headerlink" title="Creating a Cryptocurrency (Public Keys as Identities)"></a>Creating a Cryptocurrency (Public Keys as Identities)</h3><p>Creating an account = generating keys $(e, d)$</p>
+<p>$e$ = my public identity</p>
+<p>$d$ = used for signatures</p>
+<h4 id="Make-Transactions"><a href="#Make-Transactions" class="headerlink" title="Make Transactions"></a>Make Transactions</h4><p>Required information:</p>
+<ul>
+<li>Sender’s identity = pubic key</li>
+<li>Recipient’s identity</li>
+<li>Amount</li>
+<li>Proof of ownership <strong>(hash pointer to the transaction that paid sender)</strong> 来证明sender有足够的钱来做transaction</li>
+<li>Proof of consent <strong>(signature from the sender)</strong> 证明sender确认转账</li>
+</ul>
+<p>![image-20230305203624263](/Users/colythme/Library/Application Support/typora-user-images/image-20230305203624263.png)</p>
+<h4 id="How-to-verify-a-transaction"><a href="#How-to-verify-a-transaction" class="headerlink" title="How to verify a transaction?"></a>How to verify a transaction?</h4><p><em>Assumption: Everyone knows what the previous transactions were.</em></p>
+<ul>
+<li>Verify the signature to make sure Tx is approved by the sender</li>
+<li>Check identities of all inputs of Tx</li>
+<li>The amount of money counted by the inputs should be greater than the amount counted by the outputs.</li>
+<li><strong>Every output can be spent at most once</strong></li>
+</ul>
+<h3 id="Double-Spending"><a href="#Double-Spending" class="headerlink" title="Double Spending"></a>Double Spending</h3><h2 id="Lecture-9-A-Centralized-Ledger"><a href="#Lecture-9-A-Centralized-Ledger" class="headerlink" title="Lecture 9: A Centralized Ledger"></a>Lecture 9: A Centralized Ledger</h2><p>double spending affects consensus，因为我们不知道对方到底可不可信。</p>
+<p>那么结局这个consensus问题的最简单的方法当然就是有一个centralized的entity，那么大家信任这个entity就好了。</p>
+<p>There is a central bank B which keeps track of the history of all the transactions and also publishes it.</p>
+<p>为了接下来实现decentralized，Let’s first try somehow limit the power of centralizd bank.</p>
+<p>Group our tansactions into bunch of blocks, i.e., block: a sequence(有order) of Txs of size at most $b$ (one million bites).</p>
+<p>每个后面的block有个hash pointer to the previous block.</p>
+<img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230308211108886.png" alt="image-20230308211108886" style="zoom:25%;" />
+
+<p>When the bank has enough Txs, it creates a new block, it has a lot of Txs in it, and a pointer to the previous block. 那么我们会存在以下问题，以及解决方法。</p>
+<ul>
+<li>How to know if some block $B_i$ was created by the central bank? (<em>ANS:</em> The bank signs every block, i.e., everyone should know the bank’s public key s.t. everyone can check if the blocks were created)</li>
+<li>How to make sure the bank does not change the history? (<em>ANS:</em> If the bank want to change sth in the block 1, then everything will change until the very last one. 所以这是bank不能change的保证。)</li>
+<li>What is the history of Txs? What Txs has taken place? (<em>ANS:</em> Any Tx in the chain is considered to be already processed / done / finalized)</li>
+</ul>
+<img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230314203557813.png" alt="image-20230314203557813" style="zoom:50%;" />
+
+<h5 id="Viewpoint-of-a-user"><a href="#Viewpoint-of-a-user" class="headerlink" title="Viewpoint of a user:"></a><em>Viewpoint of a user:</em></h5><ul>
+<li>Form a Tx (参考Lec8)</li>
+<li>Publish Tx (Send Tx to all of my neighbours)</li>
+<li>Wait until the Tx gets into the blockchain (wait and listen for new blocks)</li>
+</ul>
+<p><strong>The Tx is finalized when I see a valid block containing the Tx.</strong></p>
+<h5 id="Viewpoint-of-a-node"><a href="#Viewpoint-of-a-node" class="headerlink" title="Viewpoint of a node:"></a><em>Viewpoint of a node:</em></h5><ul>
+<li><p>Keep track of the blockchain</p>
+</li>
+<li><p>Listen for Txs and blocks</p>
+<ul>
+<li>Case 1: If I hear a <strong>new</strong> Tx (not process the same Tx twice)<ul>
+<li>Check the validity of the Tx (<strong>This check applies to everyone except the bank</strong>)<ul>
+<li>Pass signature verification (Anyone who’s sending some money in this Tx should have signed this Tx)</li>
+<li>The sum of inputs in the Tx should $\ge$ output</li>
+<li>No double spending (There is no coin/input that is spent in this Tx and also in another Tx that is on the blockchain)</li>
+</ul>
+</li>
+<li>If Tx is valid, send it to all neighbours</li>
+</ul>
+</li>
+<li>Case 2: If I hear a block $B_i$<ul>
+<li>Check the validity of $B_i$<ul>
+<li>Verify bank signature (if it is signed by the bank)</li>
+<li>Validate every Tx in $B_i$ w.r.t $B_0, …, B_{i - 1}$ and previous Txs in $B_i$ (比如看看跟之前block里的有没有double spending)</li>
+<li>$B_i$ points to $B_{i - 1}$</li>
+</ul>
+</li>
+<li>If $B_i$ is valid<ul>
+<li>Add it to my blockchain</li>
+<li>Send it to neighbours</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h5 id="Viewpoint-of-the-bank"><a href="#Viewpoint-of-the-bank" class="headerlink" title="Viewpoint of the bank"></a><em>Viewpoint of the bank</em></h5><ul>
+<li><p>Maintain a copy of the blockchain $B_0, …, B_{i - 1}$</p>
+</li>
+<li><p>Maintain a new block $B_i$</p>
+</li>
+<li><p>Listen for Txs</p>
+<p>  When I hear a Tx</p>
+<ul>
+<li><p>Verify the Tx w.r.t. $B_0, …, B_{i - 1}, B_i$</p>
+<p>  If Tx is valid then $B_i \leftarrow B_i \cup \{\text{Tx}\}$ (add Tx to $B_i$)</p>
+<p>When $B_i$ is large enough (has enough Tx in it)</p>
+</li>
+<li><p>Make $B_i$ point to $B_{i - 1}$</p>
+</li>
+<li><p>Sign $B_i$</p>
+</li>
+<li><p>Publish $B_i$ with signature</p>
+</li>
+</ul>
+</li>
+</ul>
+<h5 id="Property"><a href="#Property" class="headerlink" title="Property"></a>Property</h5><ul>
+<li>I don’t need to disclose my identity. I only need to create an account (a public and private key pair). Then just make Tx using this account.</li>
+<li>不需要直接与bank communicate，因为你可以随便给人发Tx的信息然后他们继续向neighbour发送最终都会reach the bank.</li>
+<li>Bank cannot create Tx invalid或者挪用你的coin，因为如果bank想spend coin，必须要有valid signature喝valid Tx，但是这些只有你本人有权利发布</li>
+</ul>
+<p>那么有个最原始的问题，最开始的coin是哪里来的？</p>
+<p>所以我们需要给bank ability to create money. 这也是为什么上面viewpoint of node case 1 Check the validity of the Tx后面有括号补充的原因</p>
+<h2 id="Lecture-10-Bitcoin-and-Proof-of-Work"><a href="#Lecture-10-Bitcoin-and-Proof-of-Work" class="headerlink" title="Lecture 10: Bitcoin and Proof of Work"></a>Lecture 10: Bitcoin and Proof of Work</h2><p>The central bank’s power in centralized ledger:</p>
+<ul>
+<li>Extend the blockchain</li>
+<li>Print money</li>
+</ul>
+<hr>
+<h3 id="Decentralization"><a href="#Decentralization" class="headerlink" title="Decentralization"></a>Decentralization</h3><blockquote>
+<p>Every node has the same permissions.</p>
+</blockquote>
+<h4 id="How-to-extend-the-chain-while-preserving-consensus-for-honest-nodes"><a href="#How-to-extend-the-chain-while-preserving-consensus-for-honest-nodes" class="headerlink" title="How to extend the chain, while preserving consensus for honest nodes?"></a>How to extend the chain, while preserving consensus for honest nodes?</h4><blockquote>
+<p>Extend the chain: <strong>Mining</strong></p>
+<p>Person who extends the chain: <strong>Miner</strong></p>
+</blockquote>
+<p>这边我们不考虑fairness，只考虑consensus，即是不是chain上所有人都认可新加的block。</p>
+<p>Method: Ask everyone to solve a really hard mathematical puzzle, the first one who solves is able to add it. 这叫做 <strong>Proof of work</strong></p>
+<h5 id="Property-1"><a href="#Property-1" class="headerlink" title="Property"></a>Property</h5><ul>
+<li>Hard to solve</li>
+<li>Easy to verify</li>
+<li>Impossible to steal (比如我再通知我neighbor的时候不会让他们知道solution以至于steal我的sol来说新block是他们的)</li>
+</ul>
+<p>那么如何得到第三个property呢？</p>
+<h4 id="Hash-based-Proof-of-Work-PoW"><a href="#Hash-based-Proof-of-Work-PoW" class="headerlink" title="Hash-based Proof of Work (PoW)"></a>Hash-based Proof of Work (PoW)</h4><p>Structure of a block (what does it contain)</p>
+<ul>
+<li>Number (ID)</li>
+<li>Pointer to the previous block ($prevB$)</li>
+<li>Transactions (以Merkle Tree形式储存)</li>
+<li>Nonce (A number that is chosen by the <em>miner</em>)</li>
+</ul>
+<p>For B to be valid $h(B)$ should be small, e.g., $h(B) = 0000…0…$ 最少60个0.</p>
+<p>所以实际上，这个puzzle就是你怎么找到一个nonce，使得$h(B)$很小，而当你找出来后publish你的block，别人是能通过你的nonce验证的。而实际上，你的$hash (B)$ hash的是你的block，即你的number, prevB, Txs, etc..，所以别人在里面这些参数不同的情况下，是没法steal你的nonce来encode他们的block使得hash value很小的。这也就满足了第三条性质。</p>
+<img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230326212009190.png" alt="image-20230326212009190" style="zoom:30%;" />
+
+<h4 id="How-the-whole-protocol-works"><a href="#How-the-whole-protocol-works" class="headerlink" title="How the whole protocol works"></a>How the whole protocol works</h4><ul>
+<li>Every node is equal (decentralization)<ul>
+<li>Everyone can be a transactor: Create new transactions (<strong>exactly as in centralized ledger (CL)</strong>)</li>
+<li>Everyone is a node on the network</li>
+<li>Everyone can be a miner: Create new blocks (<strong>does anything the central bank does, and at the same time do PoW</strong>)</li>
+</ul>
+</li>
+</ul>
+<h4 id="Viewpoint-of-nodes"><a href="#Viewpoint-of-nodes" class="headerlink" title="Viewpoint of nodes"></a>Viewpoint of nodes</h4><p><em>A node keeps track of</em></p>
+<ul>
+<li>Blockchain</li>
+<li>Mempool (the set of all valid Txs I have seen now, but have not been published to the blockchain (not finalized))</li>
+</ul>
+<p><em>If the node hears a new Tx</em></p>
+<ul>
+<li><p>Verify its validity</p>
+<ul>
+<li>Verify signatrues</li>
+<li>Verify if $\sum inpts \ge \sum outputs$</li>
+<li>Verify no double-spending w.r.t. the blockchain &amp; <strong>mempool</strong></li>
+</ul>
+</li>
+<li><p>If Tx is valid</p>
+<ul>
+<li><p>Send Tx to all neighbours</p>
+</li>
+<li><p>Add Tx to mempool</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><em>If the node hears a new block $B$</em></p>
+<ul>
+<li>Verify the validity of $B$<ul>
+<li>$h(B)$ is smaller than $d$</li>
+<li>All Txs in $B$ are valid<ul>
+<li>Signatures</li>
+<li>$\sum inputs \ge \sum output$</li>
+<li>No double-spending w.r.t. blockchain $\cup$ $B$ (no mempool，因为mempool的是没有finalized的，所以我们可以允许这个miner在这种情况下double-spending，即在blockchain上发布一个新的block) </li>
+</ul>
+</li>
+</ul>
+</li>
+<li>If the block is valid<ul>
+<li>Add it to blockchain (my own copy of blockchain)</li>
+<li>Update my mempool</li>
+<li>Send $B$ to all neighbours</li>
+</ul>
+</li>
+</ul>
+<h3 id="What-happens-if-two-valid-blocks-are-found-at-approximately-the-same-time"><a href="#What-happens-if-two-valid-blocks-are-found-at-approximately-the-same-time" class="headerlink" title="What happens if two valid blocks are found at approximately the same time?"></a>What happens if two valid blocks are found at approximately the same time?</h3><blockquote>
+<p>这个situation也被称作<strong><em>fork</em></strong></p>
+</blockquote>
+<p>Consensus rule of bitcoin:</p>
+<ul>
+<li>Miners get to choose which chain to extend</li>
+<li>取最长的链作为正确的链</li>
+</ul>
+<p>所以实际上一个node会keep track of <strong>all valid forks</strong></p>
+<h2 id="Lecture-11-Mining-Rewards-and-Forks"><a href="#Lecture-11-Mining-Rewards-and-Forks" class="headerlink" title="Lecture 11: Mining Rewards and Forks"></a>Lecture 11: Mining Rewards and Forks</h2><h3 id="How-to-cerate-new-units-of-currency"><a href="#How-to-cerate-new-units-of-currency" class="headerlink" title="How to cerate new units of currency"></a>How to cerate new units of currency</h3><h3 id="Why-should-anyone-be-a-miner"><a href="#Why-should-anyone-be-a-miner" class="headerlink" title="Why should anyone be a miner"></a>Why should anyone be a miner</h3><blockquote>
+<p><strong>Block rewards</strong>: Any valid block can include a transasction that has no input and a single output paying the miner</p>
+<p>比如block reward = 25 BTC</p>
+</blockquote>
+<p>In bitcoin, the block reward gets halved after every 210000 blocks (~ 4 years). 这可以control the amount of bitcoin currency以防止他不是无限膨胀的。</p>
+<h3 id="Why-should-a-miner-mines-a-non-empty-block"><a href="#Why-should-a-miner-mines-a-non-empty-block" class="headerlink" title="Why should a miner mines a non-empty block"></a>Why should a miner mines a non-empty block</h3><p>作为一个miner，我可以只mine empty block to obtain block rewards</p>
+<h4 id="Transaction-fees-可以理解为手续费"><a href="#Transaction-fees-可以理解为手续费" class="headerlink" title="Transaction fees (可以理解为手续费)"></a>Transaction fees (可以理解为手续费)</h4><ul>
+<li>In every valid Tx, $\sum inputs \ge \sum outputs$</li>
+<li>The difference $\sum inputs - \sum outputs$ is paid to the miner <strong>who adds this Tx to the blockchain</strong> as a transaction fee</li>
+</ul>
+<blockquote>
+<p>If you want to add your Tx sooner to the blockchain, pay more Tx fees</p>
+</blockquote>
+<p>In Bitcoin, each block is at most $10^6$ bytes 来防止在run protocol时出现delay。</p>
+<p>所以有了size的限制以及transaction fee的竞争，我在通过mining获得了block rewards后能够大概率保证让它上链的最佳办法就是pay more transaction fees</p>
+<blockquote>
+<p>Question: <em>What if the block created by a miner is not in the longest chain, will the miner still gets rewards?</em></p>
+<p>Answer: <em>No. Any Tx outside the consensus chain is ignored.</em></p>
+</blockquote>
+<h3 id="Double-spending-attack"><a href="#Double-spending-attack" class="headerlink" title="Double-spending attack"></a>Double-spending attack</h3><p>Scenario: Suppose a bitcoin-based vending machine (bitcoin-based自动售货机)</p>
+<ul>
+<li>Merchant provides their identity (public key)</li>
+<li>Customer creates a Tx paying the merchant</li>
+<li>Customer gives Tx to the merchant</li>
+<li>Merchant verifies the validity of the Tx<ul>
+<li>If valid<ul>
+<li>Publish Tx</li>
+<li>Provide item</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>但里面有些问题：</p>
+<h4 id="First-attack-Immediate-double-spending"><a href="#First-attack-Immediate-double-spending" class="headerlink" title="First attack: Immediate double-spending"></a><em>First attack:</em> Immediate double-spending</h4><p>Suppose a Tx on blockchain, which pays 1 BTC to Alice. Now Alice creates a new Tx $Tx_1$, and takes the 1 BTC as the input of $Tx_1$, and set output as 0.99 BTC (不可能是1，因为有Tx fee) to the vending machine. Suppose now she creates another $Tx_2$ immediately and uses the same input, and pay 0.95 BTC to Alice (herself). 比如这两个Tx是在不同地方发生的，比如HK和US，那么可能HK的人先看见$Tx_1$，但是US的人先看见$Tx_2$，那么这笔double-spending可能就会成功</p>
+<p>If the miner includes $Tx_2$ in a block, then the attck will be successful.</p>
+<p>另一种更聪明的方法是Alice can bribe the miner to increase her chances，即让$Tx_2$的Tx fee更高，而这笔钱是付给其他miner的。</p>
+<h5 id="Solution-1"><a href="#Solution-1" class="headerlink" title="Solution"></a>Solution</h5><p>Wait for $Tx_1$ to be mined (added to the blockchain)</p>
+<h4 id="Second-attack-Double-spending-in-a-fork"><a href="#Second-attack-Double-spending-in-a-fork" class="headerlink" title="Second attack: Double-spending in a fork"></a><em>Second attack:</em> Double-spending in a fork</h4><p>这时用上面的方法就行不通了，因为如果我要等$Tx_1$被finalized，就需要等下一个block be mined to contruct a longer chain。然而这个时间可能会是10min甚至更久，而vending machine要的就是实时付款实时交货，所以不可行。</p>
+<h5 id="What-the-merchant-sees"><a href="#What-the-merchant-sees" class="headerlink" title="What the merchant sees"></a>What the merchant sees</h5><ul>
+<li>$Tx_1$ that is paying merchant</li>
+<li>Wait for almost 10 min until a block in the blockchain that contains $Tx_1$</li>
+</ul>
+<p>那么问题来了，some blocks can be reverted (it used to be in the consensus chain, but now no longer in) and $Tx_1$ might be removed from the consensus chain</p>
+<h5 id="Solution-2"><a href="#Solution-2" class="headerlink" title="Solution"></a>Solution</h5><p>Wait for confirmation (一般来讲是6 confirmations)</p>
+<p>这里的confirmation指的是比如$B_n$是要pay给我的那个Tx，它的后继有一个新的block added，那么这个新的block就相当于一个confirmation，因为它认可了$B_n$作为the last block的地位；如果后面又接了一个block，那么就是second confirmation…</p>
+<p>但这样就需要等待~ 1h了。所以vending machine并不适合bitcoin。</p>
+<h3 id="Adjusting-difficulty"><a href="#Adjusting-difficulty" class="headerlink" title="Adjusting difficulty"></a>Adjusting difficulty</h3><blockquote>
+<p>In Bitcoin, a new block is mined ~ 10 minutes</p>
+</blockquote>
+<p>PoW: Find a valid block $B$ s.t. $h(B) \le d$</p>
+<p>Suppose a hash function $h: \sum^* \rightarrow \sum^{256}$</p>
+<p>Let’s assume $h$ behaves like a uniformly randomed function</p>
+<p>What is a miner’s success probability if they try $k$ blocks?</p>
+<p>Every time I have a prob of $\frac{d}{2^{256}} \ge \frac{kd}{2^{256}}$ to succeed</p>
+<p>那么try $k$次成功的概率就是$1 - (1 - \frac{d}{2^{256}})^k$</p>
+<p>Now, here’s the thing. I can dynamically change the number $d$ 来让我的problem变得harder</p>
+<p>All Bitcoin blocks have a timestamp。太久远或者未来的timestamp就不用管了</p>
+<p>然后我根据这些timestamps选出最近的1000个，find the avg mining time $\mu$</p>
+<ul>
+<li>If $\mu &gt; 10$, increase $d$, decrease difficulty</li>
+<li>If $\mu &lt; 10$, decrease $d$, increase difficulty</li>
+</ul>
+<p>从而保证期望新增一个block的时间是10min</p>
+<h2 id="Lecture-12-Centralization-and-Scripts"><a href="#Lecture-12-Centralization-and-Scripts" class="headerlink" title="Lecture 12: Centralization and Scripts"></a>Lecture 12: Centralization and Scripts</h2><h3 id="Bitcoin’s-honesty-assumption"><a href="#Bitcoin’s-honesty-assumption" class="headerlink" title="Bitcoin’s honesty assumption"></a>Bitcoin’s honesty assumption</h3><blockquote>
+<p>Majority of the computational power is honest</p>
+</blockquote>
+<h4 id="What-if-the-assumption-does-not-hold"><a href="#What-if-the-assumption-does-not-hold" class="headerlink" title="What if the assumption does not hold?"></a>What if the assumption does not hold?</h4><p><em>Imagine a malicious miner with more than half of the hash power</em></p>
+<p>Suppose block B1 &lt;- B2 &lt;- B3</p>
+<p>假如我是个honest miner，那么我会extend B3。反之，若是malicious，我会extend B2，并让这个dishonest chain不断延长，使得B3不复存在</p>
+<p>那么现在因为我有more than half of the hash power，所以我有能力做到作假</p>
+<p>这种attack方式叫做51% attack</p>
+<p>own more than 50% computational power的另一种作弊的方法: Double-spending，本质上和上面的是差不多的，</p>
+<hr>
+<h3 id="Scripts"><a href="#Scripts" class="headerlink" title="Scripts"></a>Scripts</h3><p>Tx:</p>
+<p>Input:</p>
+<ul>
+<li>Value &amp; <strong>parameters(Scripts) to spend the coins</strong> (与下面的conditions to use coins对应)</li>
+</ul>
+<p>Output:</p>
+<ul>
+<li>Value &amp; <strong>Conditions(Scripts) to use these coins</strong> (比如condition可以是require signs from A &amp; B，就是加一些使用条件)</li>
+<li></li>
+</ul>
+<h4 id="Micropayments-Scripts的用处"><a href="#Micropayments-Scripts的用处" class="headerlink" title="Micropayments (Scripts的用处)"></a>Micropayments (Scripts的用处)</h4><blockquote>
+<p>Scenario:</p>
+<p>Alice is a customer &amp; Bob is a mobile network</p>
+<p>Alice makes a phone call and pays 0.1 HKD per min</p>
+<p>Neither side trusts the other</p>
+<p>Alice does not trust Bob, she wants service first</p>
+<p>Bob does not trust Alice, he wants payment first</p>
+<p>且我们不想pay every minute，即不想有很多的transaction</p>
+</blockquote>
+<ul>
+<li><p>Alice puts down a deposit of 100 HKD，现在她不想直接付钱</p>
+<p>  She creates a Tx1, putting 100 HKD as input, and an output of 100 HKD (conditions: needs signatures from both Alice &amp; Bob)</p>
+<p>  The Alice publishes the block to the blockchain. And wait until it is completely on the blockchain.</p>
+</li>
+<li><p>Alice starts her phone call。但是要能打Alice必须先pay 1 HKD</p>
+<p>  那么现在Alice将Tx1的output连到一个新的block，并给Tx1签名，这个block的output有两个: 1 HKD to Bob &amp; 99 HKD to Alice。</p>
+<p>  到了second minute，Alice再create一个new Tx，taking the same deposit as input, but paying 2 HKD to Bob &amp; 98 HKD to Alice。</p>
+<p>  以此类推</p>
+<p>  上面的Tx目前都是invalid的，但是只要Bob给Tx1签名，再选择一个出来的block publish，就可以收到钱了。当然，假如Alice打了k分钟电话，那么Bob选的肯定是第k个block。因为如果Bob cheat publish多个，那就是double-spending。</p>
+</li>
+<li><p>Bob signs the last Tx and publishes it to the blockchain</p>
+</li>
+</ul>
+<p>但是上述protocol有一个问题，就是在Alice publish Tx1后，她的这100 HKD实际上是被locked的，也就是说，只要Bob不签名，她这100 HKD就相当于存进去取不出来了。所以此时Bob就有机会去extort Alice，threaten她说如果你不给我50 HKD，then I’ll not sign any of these transactions，让她的钱被永久冻结。</p>
+<p>解决方法是在最开始的condition那儿加上一句(<strong>or signature from Alice and block number &gt; $c$</strong>)，即多少天后</p>
+<h2 id="Lecture-13-Two-way-Payment-Channels"><a href="#Lecture-13-Two-way-Payment-Channels" class="headerlink" title="Lecture 13: Two-way Payment Channels"></a>Lecture 13: Two-way Payment Channels</h2><h3 id="One-way-Payment-Channel"><a href="#One-way-Payment-Channel" class="headerlink" title="One-way Payment Channel"></a>One-way Payment Channel</h3><ul>
+<li><p>Alice publishes $Tx_1$</p>
+  <img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230419160840029.png" alt="image-20230419160840029" style="zoom:33%;" />
+
+<p>  右上角是timeline，$Tx_0$ 是Alice发起transaction的时间，被括弧框住的时间区间是Alice能pay Bob的时间，最后的 $t$ 就是Bob经过这么长的时间不sign不accept，Alice把自己的钱收回来的时间。</p>
+<p>  那么Bob的ddl和 $t$ 之前的时间段又代表着什么呢？它代表着Bob publishes the last transaction but still waiting for the confirmation。</p>
+</li>
+<li><p>Alice creates a series of $Tx_1$ which takes the output of $Tx_0$ as input, and output 1 unit to Bob &amp; 99 unit back to Alice</p>
+<p>  Alice creates and signs $Tx_1$ and sends it to Bob. 其他unit to Bob以此类推</p>
+</li>
+<li><p>Bob signs $Tx_k$ and publishes it on the network (and finalized on the blockchain)</p>
+</li>
+</ul>
+<h4 id="Properties"><a href="#Properties" class="headerlink" title="Properties"></a>Properties</h4><ul>
+<li><p>Money flows in one direction (Alice $\rightarrow$ Bob)</p>
+<p>  Alice can only increase the total payment to Bob (因为Bob总会选择自己获益最大的那个block)</p>
+</li>
+<li><p>Bob can close the channel</p>
+</li>
+<li><p>The channel expires at time $t$</p>
+</li>
+<li><p>The channel has a fixed capacity</p>
+</li>
+</ul>
+<p>Only two Txs are added to the blockchain $\Rightarrow$ only two Tx fees paid for $k$ payments</p>
+<p>Payments are instant，原因是对于Alice，我构造出了$Tx_0$之后只需要直接sign，然后再构造出$Tx_1, Tx_2, …$，之后就不用管了，是instant就可以结束了；对于Bob，我也是直接sign一个新构造的block就可以了。</p>
+<h3 id="Two-way-Payment-Channel"><a href="#Two-way-Payment-Channel" class="headerlink" title="Two-way Payment Channel"></a>Two-way Payment Channel</h3><p>Scenerio: Alice &amp; Bob are friends，他们直接经常需要进行transaction，并且不想每次都pay transaction fee。</p>
+<h4 id="Simple-Solution"><a href="#Simple-Solution" class="headerlink" title="Simple Solution"></a>Simple Solution</h4><ul>
+<li>Create two one-way channels (Alice $\rightarrow$ Bob &amp; Bob $\rightarrow$ Alice)</li>
+</ul>
+<p>但是这样有几个问题：</p>
+<ul>
+<li><p>Alice can only increase the total payment to Bob</p>
+</li>
+<li><p>A created channel has a capacity</p>
+<p>  比如说，Alice creates a block跟上面的 $Tx_0$ 一样，那么他的capacity就是100 (100 + 1，其中1是transaction fee)，因为这钱花完了就没了，除非你重新给$Tx_k$接入一个新的input，那么这又需要重新构造新的block。</p>
+</li>
+</ul>
+<h4 id="Second-Attempt-Let-money-flow-in-both-directions"><a href="#Second-Attempt-Let-money-flow-in-both-directions" class="headerlink" title="Second Attempt: Let money flow in both directions"></a>Second Attempt: Let money flow in both directions</h4><img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230419163640145.png" alt="image-20230419163640145" style="zoom:33%;" />
+
+<p>如果Bob cheat就触发后面的$\text{Alice} \cap c$，降钱还给Alice，没有的话就正常给Bob after time $t$。</p>
+<p>那么proof $c$怎么生成呢？</p>
+<p>Here the <em>cheat</em> means Bob has published $Tx_i$ but $\exist Tx_j, j &gt; i$ that pays less to Bob，即他publish的不是最后的block，因为最后的block总是代表着Alice要给Bob钱数的最终想法。</p>
+<p>Change in protocol: Bob has to sign the index of every transaction, and sends the signatures to Alice。其中index指的是上图每个block中间的小方框中的 $1, 2, 3, …$</p>
+<p>那么此时，$c = $ Bob’s signature on an index $&gt;$ current transaction’s index</p>
+<h4 id="One-way-Channel-with-Refunds"><a href="#One-way-Channel-with-Refunds" class="headerlink" title="One-way Channel with Refunds"></a>One-way Channel with Refunds</h4><ul>
+<li><p>Alice puts down a deposit</p>
+  <img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230419165019587.png" alt="image-20230419165019587" style="zoom:33%;" />
+</li>
+<li><p>When Alice wants to pay Bob</p>
+  <img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230419165209448.png" alt="image-20230419165209448" style="zoom:33%;" />
+</li>
+<li><p>When Bob wants to refund</p>
+  <img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230419165511810.png" alt="image-20230419165511810" style="zoom:33%;" />
+
+</li>
+</ul>
+<h4 id="Two-way-Channel"><a href="#Two-way-Channel" class="headerlink" title="Two-way Channel"></a>Two-way Channel</h4><p>Alice creates a one-way channel with refunds $c_1$ to Bob ($\text{Alice} \rightarrow \text{Bob}$)</p>
+<p>Bob creates a one-way channel with refunds $c_2$ to Alice ($\text{Bob} \rightarrow \text{Alice}$)</p>
+<img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230419170639721.png" alt="image-20230419170639721" style="zoom:33%;" />
+
+<p>可以发现上面的操作只需要一个操作create a block，跟之前的比起来好很多</p>
+<h2 id="Lecture-15-Escrows-and-Ethereum-like-Smart-Contracts"><a href="#Lecture-15-Escrows-and-Ethereum-like-Smart-Contracts" class="headerlink" title="Lecture 15: Escrows and Ethereum-like Smart Contracts"></a>Lecture 15: Escrows and Ethereum-like Smart Contracts</h2><p>Scenario: Alice wants to buy a physical good from Bob and pay BTC, and they do not trust each other</p>
+<p>Awful solution: Use a third-party Carol</p>
+<img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230419205936577.png" alt="image-20230419205936577" style="zoom:33%;" />
+
+<img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230419210002349.png" alt="image-20230419210002349" style="zoom:33%;" />
+
+<img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230419210026542.png" alt="image-20230419210026542" style="zoom:33%;" />
+
+<p>Problem: Bribery</p>
+<p>A rational Carol signs and publishes $Tx_m$ (You are rational iff you only care about maximizing your own payoff)</p>
+<p>存在这个问题的话，我们也无法信任Carol。</p>
+<h4 id="Next-step-Remove-Carol-from-the-protocol"><a href="#Next-step-Remove-Carol-from-the-protocol" class="headerlink" title="Next step: Remove Carol from the protocol"></a>Next step: Remove Carol from the protocol</h4><img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230419213947435.png" alt="image-20230419213947435" style="zoom:33%;" />
+
+<img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230419215157440.png" alt="image-20230419215157440" style="zoom:33%;" />
+
+<p>因为Bob可以wait for Alice to put down the deposit and don’t send the item，之后跟Alice说我可以不sign，那么你就会lose 100 ETH，以此来进行extortion。</p>
+<p>所以我们需要两边都put down deposits</p>
+<h4 id="Solution-Change-the-deposit-Tx"><a href="#Solution-Change-the-deposit-Tx" class="headerlink" title="Solution: Change the deposit $Tx$"></a>Solution: Change the deposit $Tx$</h4><img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230419223414654.png" alt="image-20230419223414654" style="zoom:33%;" />
+
+<p>这个方法叫做bithalo</p>
+<h3 id="Problem-with-Bitcoin-Scripts"><a href="#Problem-with-Bitcoin-Scripts" class="headerlink" title="Problem with Bitcoin Scripts"></a>Problem with Bitcoin Scripts</h3><ul>
+<li>Scripts are attached to outputs</li>
+<li>Limited language<ul>
+<li>complete and unambiguous semantics</li>
+<li>All scripts must terminate in $O (1)$</li>
+<li>Bitcoin miners have script whitelists</li>
+</ul>
+</li>
+</ul>
+<h3 id="Ethereum-like-Smart-Contract"><a href="#Ethereum-like-Smart-Contract" class="headerlink" title="Ethereum-like Smart Contract"></a>Ethereum-like Smart Contract</h3><p>The consensus in bitcoin is on a sequence of transactions</p>
+<p>Let Txs do moreL</p>
+<ul>
+<li><p>Deploy a program (i.e., smart contract)</p>
+<p>  The code now reaches consensus, and now everyone knows what exactly my code was</p>
+<p>  <em>data:</em> program’s code</p>
+</li>
+<li><p>Invoke functions of a previously-deployed smart contract</p>
+<p>  <em>data:</em></p>
+<ul>
+<li>pointer to the contract</li>
+<li>function name $f$</li>
+<li>parameters of $f$</li>
+</ul>
+</li>
+</ul>
+<p><strong>Every contract can receive and manage money</strong></p>
+<h2 id="Lecture-14-Basics-of-Solidity-and-Ethereum-Smart-Contracts"><a href="#Lecture-14-Basics-of-Solidity-and-Ethereum-Smart-Contracts" class="headerlink" title="Lecture 14: Basics of Solidity and Ethereum Smart Contracts"></a>Lecture 14: Basics of Solidity and Ethereum Smart Contracts</h2><h3 id="Gas-amp-Fees"><a href="#Gas-amp-Fees" class="headerlink" title="Gas &amp; Fees"></a>Gas &amp; Fees</h3><p>这个东西的出现是因为可能会出现以下的情况，</p>
+<p>一个malicious actor写了一个never terminate的function，并且publish到了blockchain，且让一个block去invoke它，让它形成consensus，那么此时chain上的所有人都得一个个function调用，总是会调用到这个导致never terminate，从而cause a denial of service attack</p>
+<blockquote>
+<p>Gas refers to the unit that measures the amount of computational effort required to execute specific operations on the Ethereum network.</p>
+</blockquote>
+<p>它实际上就是一个约束，你的function运行时间越长，你的transaction fee要交的越多</p>
+<h2 id="Lecture-19-Secret-Sharing"><a href="#Lecture-19-Secret-Sharing" class="headerlink" title="Lecture 19: Secret Sharing"></a>Lecture 19: Secret Sharing</h2><h3 id="Commitment-Schemes"><a href="#Commitment-Schemes" class="headerlink" title="Commitment Schemes"></a>Commitment Schemes</h3><p>A <strong>commitment scheme</strong> is a cryptographic primitive that allows one to commit to a chosen value (or chosen statement) while keeping it hidden to others, with the ability to reveal the committed value later.</p>
+<p>下面来讲解几个commitment schemes的用的area</p>
+<h4 id="Random-Number-Genenration"><a href="#Random-Number-Genenration" class="headerlink" title="Random Number Genenration"></a>Random Number Genenration</h4><ul>
+<li><strong>Phase 1:</strong> Player $i$ first commits to the hash of $r_i$. i.e., $h (r_i)$, and wait for other players to commit</li>
+<li><strong>Phase 2:</strong> Player $i$ reveals $r_i$</li>
+<li>Output random number $r = \oplus_{i = 1}^n r_i$</li>
+</ul>
+<p><em>Problem:</em></p>
+<ul>
+<li><p>It is in an honest player’s best interest not to reveal their value $r_i$ in phase 1</p>
+</li>
+<li><p>What if a malicious player does not reveal in phase 2?</p>
+<p>改进版:</p>
+</li>
+<li><p><strong>Phase 1:</strong> Player $i$ first commits to the hash of $r_i$. i.e., $h (r_i)$ <strong>and pay a deposit $d_i$</strong>, and wait for other players to commit</p>
+</li>
+<li><p><strong>Phase 2:</strong> Player $i$ reveals $r_i$, <strong>if he does not reveal then he will lose the deposit</strong></p>
+</li>
+<li><p>Output random number $r = \oplus_{i = 1}^n r_i$</p>
+</li>
+</ul>
+<p>而且我们要保证的是malicious player lose的比可能win的多，否则他会选择这局放弃deposit然后restart，在下一局赚回来，或是继续重复restart，直到赚回钱, i.e., $d &gt; \sum tickets$</p>
+<p> 我们可以发现，这一切extortion的源头都是因为总是回存在一个人在别人后面publish，即不是simultaneous的。所以commitment schemes实际上就是在simulate simultaneous information publishment</p>
+<p>但是实际上，commitment scheme是有弱点的，在对方，Bob intentionally leak他自己的choice的时候，commitment scheme就失去了意义，他仍然可以extort Alice。这个跟Escrow的例子是一样的</p>
+<img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230503172145567.png" alt="image-20230503172145567" style="zoom:33%;" />
+
+<p>在这个例子中，Alice deposit 2 ETH，Bob deposit 1 ETH，Bob claim他已经把货发给了Alice，即 $r_i = fulfilled$，但实际上没有。他就此extort Alice。如果Alice接受extortion，她会get 1 ETH back，Bob得到2 ETH。反之，Alice gets nothing back，Bob也gets nothing back。作为一个rational player，Alice会accept extortion。</p>
+<img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230503172342907.png" alt="image-20230503172342907" style="zoom:33%;" />
+
+<hr>
+<h3 id="Random-Number-Generation"><a href="#Random-Number-Generation" class="headerlink" title="Random Number Generation"></a>Random Number Generation</h3><p>Main flaw(缺陷): A player can choose not to reveal</p>
+<p>Solution: Design a protocol in which $r_i$ is revealed even if player $i$ doesn’t want to</p>
+<h4 id="Secret-Sharing"><a href="#Secret-Sharing" class="headerlink" title="Secret Sharing"></a>Secret Sharing</h4><p>Alice has a secret $s \in [0, p)$, $p$ 是模数</p>
+<img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230503173816709.png" alt="image-20230503173816709" style="zoom:33%;" />
+
+<p><strong>注意这里需要学习拉格朗日插值</strong></p>
+<p>我们可以发现拉格朗日插值和我们要的结果很像，就是我们能够根据 $t$ 个information构建一个polynomial，但是 $t - 1$ 个就不行</p>
+<p>所以一个很直接的想法就是，Alice可以把她的secret encode成coefficients of the polynomial</p>
+<ul>
+<li><p>Alice creates a polynomial $g$ of degree $t -1$</p>
+<p>  $g(x) = a_0 + a_1x + … + a_{t - 1}x^{t - 1}$</p>
+<p>  $a_0 = g (0) = s$, $a_1, a_2, …$ chosen randomly</p>
+</li>
+<li><p>Alice computes $s_i = g (i)$ and gives it to $f_i$</p>
+</li>
+</ul>
+<p>现在回到原来的问题，怎么样才能让别人能够compute $r_i$呢</p>
+<p>一个方法便是，在你choose你的 $r_i$ 的时候你也必须要告诉别人你的share of $r_i$，这样若你refuse to reveal，别人也能够compute your $r_i$</p>
+<p>所以，overall的方法便是，(首先假设everyone knows a prime number $p$)</p>
+<ul>
+<li><p>Players sign up with smart contract and pay deposit $d$</p>
+<p>  Assume $n$ people sign up</p>
+</li>
+<li><p>Each player $i$ chooses $r_i$</p>
+<p>  Player $i$ forms $g_i$ of degree $t - 1$ and gives shares to everyone $j \neq i$</p>
+</li>
+<li><p>Player $i$ commits to $h (r_i, n_i)$ on the smart contract</p>
+</li>
+<li><p>Player $i$ reveals $r_i, n_i$</p>
+</li>
+<li><p>If a player $i$ fails to reveal, then other players come together and compute $r_i$</p>
+</li>
+<li><p>$r = \sum r_i \mod p$</p>
+</li>
+</ul>
+<p>Constraints:</p>
+<ul>
+<li>At least $t$ honest players，不然没法计算出准确的 $r_i$</li>
+<li>At most $t - 1$ dishonest players，若dishonest的players有大于等于 $t$ 个，那么他们就足以伪造一个 $r_i$</li>
+</ul>
+<blockquote>
+<p>注意，在这种情况下，如果你想cheat，那么你不得不在phase 1进行cheat，但是此时you know nothing about $r$，所以cheating is pointless</p>
+</blockquote>
+<h2 id="Lecture-20-Random-Number-Generation-via-Verifiable-Delay-Functions"><a href="#Lecture-20-Random-Number-Generation-via-Verifiable-Delay-Functions" class="headerlink" title="Lecture 20: Random Number Generation via Verifiable Delay Functions"></a>Lecture 20: Random Number Generation via Verifiable Delay Functions</h2><p>Goal: Gneerate a random number $r = \{0, 1, …, n - 1\}$</p>
+<p>Desired properties:</p>
+<ul>
+<li>Uniform Distribution: 只要我的任意一个player is honest并且给我generate了一个random number from uniform distribution，那么我最后计算得到的 $r$ 一定是from uniform distribution的</li>
+<li>Tamper-resistance<ul>
+<li>Commitment Scheme: Need deposits &gt; $\sum tickets$</li>
+<li>Secret sharing: Need &gt; half of the players are honest</li>
+</ul>
+</li>
+</ul>
+<h4 id="Ideal-Protocol"><a href="#Ideal-Protocol" class="headerlink" title="Ideal Protocol"></a>Ideal Protocol</h4><ul>
+<li>Phase 1: Every player $i$ chooses $r_i$ and computes $c_i = commit (r_i)$ and records it in smart contract + <strong>paying deposit $d$</strong></li>
+<li>Phase 2: Every player $i$ reveals $r_i$ to the smart contract &amp; SC verifies that $c_i = commit (r_i)$</li>
+<li>Phase 3: For every player $i$ who has not revealed $r_i$ other players can compute $r_i$</li>
+</ul>
+<h4 id="Properties-of-Commmit-hash-function"><a href="#Properties-of-Commmit-hash-function" class="headerlink" title="Properties of Commmit (hash function)"></a>Properties of Commmit (hash function)</h4><ul>
+<li><p>Collision-free: It is impossible to find $x \neq y$ s.t. $commit (x) = commit (y)$</p>
+</li>
+<li><p><strong>Time-consuming</strong> to invert: Given a commitment $c_i = commit (r_i)$, it takes <strong>at least $T$ units of time no matter how many cores/threads you have</strong> to compute $r_i$</p>
+<p>  假设我们phase 1 + phase 2总共加起来需要 $\frac{T}2$ 的时间，那么commit就可被视作无法被解密</p>
+</li>
+<li><p>Easy to compute</p>
+</li>
+</ul>
+<p>但是你会发现有一个问题，就是实际上hash function不可能是one-to-one的，这就和time-consuming to invert冲突了，因为malicious player就可以在游戏开始前花费时间 $T$ 预先算好两个 $x, y$, s.t., $commit (x) = commit (y)$。那么在提交相同commit的情况下，第二次publish的结果却不同了</p>
+<p>所以我们需要一个close to上述所有条件的function</p>
+<hr>
+<h3 id="VDF-Verifiable-Delay-Function"><a href="#VDF-Verifiable-Delay-Function" class="headerlink" title="VDF: Verifiable Delay Function"></a>VDF: Verifiable Delay Function</h3><ul>
+<li><p>Evaluation function: $Eval (x) = (y, \pi)$，其中 $f(x) = y$，而 $\pi$ 指的是 the proof that shows $y$ is really $x$ 根据函数 $f$ 得到的hash结果</p>
+<p>  <strong>Takes at least $T$ time</strong></p>
+</li>
+<li><p>Verification: $Verify (x, y, \pi) \rightarrow \{true, false\}$</p>
+<p>  <strong>Fast</strong></p>
+</li>
+</ul>
+<p>Uniqueness: $\forall x !\exist y \exist \pi, verify (x, y, \pi) = true$，这里 $!\exist$ 指的是exist exactly one</p>
+<p>$\epsilon$-sequentiality: Given $x$ and spending $T (1 - \epsilon)$ time, you cannot find anything about $y$</p>
+<hr>
+<h3 id="VDF-Based-RNG"><a href="#VDF-Based-RNG" class="headerlink" title="VDF-Based RNG"></a>VDF-Based RNG</h3><ul>
+<li>Phase 1: Every player $i$ submites $r_i$ to SC</li>
+<li>Phase 2: $h = \sum r_i \mod n$</li>
+<li>Phase 3: $r = VDF_T (h)$</li>
+</ul>
+<p>Phase 1 + Phase 2 = $\frac{T}{10}$ of time</p>
+<ul>
+<li>Phase 4: Someone submits $r$ and $\pi$ to the SC, then SC does $verify (h, r, \pi)$</li>
+</ul>
+<h2 id="Lecture-21-Mixing-and-Blind-Signatures"><a href="#Lecture-21-Mixing-and-Blind-Signatures" class="headerlink" title="Lecture 21: Mixing and Blind Signatures"></a>Lecture 21: Mixing and Blind Signatures</h2><p>Bitcoin identities are public keys &amp; not connected to real-world identity</p>
+<p>But can someone find my real-world identity if I use bitcoin?</p>
+<p>We need to answer some questions</p>
+<ul>
+<li>Where do I get my bitcoins?<ul>
+<li>Mine —— Safe but not practical</li>
+<li>Buy —— Leaks your real-world identity (you need to identify yourself through legal procedures to buy bitcoins)</li>
+</ul>
+</li>
+<li>Where do I spend my bitcoins?<ul>
+<li>When you pay you disclose<ul>
+<li>Your public key</li>
+<li>Your real-world identity (for example government asks you to do)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Why care?<ul>
+<li>Even if one public key is leaked, all future Txs are deanonymized</li>
+<li>Even if one public key is leaked, all past Txs are deanonymized</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="How-to-Keep-the-IDs-Private"><a href="#How-to-Keep-the-IDs-Private" class="headerlink" title="How to Keep the IDs Private?"></a>How to Keep the IDs Private?</h3><p>Break the link between your public key &amp; real-world ID</p>
+<h4 id="First-Idea-Money-Landering"><a href="#First-Idea-Money-Landering" class="headerlink" title="First Idea: Money Landering"></a>First Idea: Money Landering</h4><p>Be chaotic:</p>
+<ul>
+<li>Create a lot of accounts</li>
+<li>Randomly move money around</li>
+</ul>
+<blockquote>
+<p>Gives you privacy w.r.t. small actors</p>
+</blockquote>
+<h4 id="Second-Idea-Use-a-Mixer"><a href="#Second-Idea-Use-a-Mixer" class="headerlink" title="Second Idea: Use a Mixer"></a>Second Idea: Use a Mixer</h4><p>Everyone can transfer money to the mixer. Pay in with the same amount, and the mixer pay to new accounts</p>
+<img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230503224401333.png" alt="image-20230503224401333" style="zoom:33%;" />
+
+<p>这样别人就无法找到input account和output account的联系了</p>
+<p><em>Problems:</em></p>
+<ul>
+<li>This is centralized solution, we cannot trust the mixer who knoews both of my accounts</li>
+<li>The mixer might steal my money and there is nothing I can do about it</li>
+</ul>
+<p><em>Solution:</em></p>
+<p>I need these properties:</p>
+<ul>
+<li>trustlessness: wanna make sure the mixer cannot keep my money<ul>
+<li>Sol: 把mixer的角色从一个account换成smart contract</li>
+</ul>
+</li>
+<li>privacy from the mixer: make sure even the mixer itself cannot link between my old &amp; new account</li>
+</ul>
+<hr>
+<h3 id="Blind-Signatures"><a href="#Blind-Signatures" class="headerlink" title="Blind Signatures"></a>Blind Signatures</h3><p>Scenario (in real world):</p>
+<ul>
+<li>Alice is a customer of the bank</li>
+<li>Only the bank knows her balance</li>
+<li>Bob is a customer, too</li>
+<li>Alice wants to pay Bob</li>
+</ul>
+<p>但是Alice现在不想让知道bank我现在要pay的是Bob，即we want privacy w.r.t. the bank</p>
+<p>所以bank需要知道的只有:</p>
+<ul>
+<li>Money leaves Alice’s account</li>
+<li>Money enters Bob’s account</li>
+</ul>
+<p>在这种情况下没有serial number的banknotes就可以起到这个作用。Alice withdraw一个banknotes，然后给Bob，Bob再将其拿给bank兑换，那么bank knows nothing about the process</p>
+<p>放到digital world也是同理，我们想要实现上面这样的功能</p>
+<h4 id="Idea-Issue-Banknotes"><a href="#Idea-Issue-Banknotes" class="headerlink" title="Idea: Issue Banknotes"></a>Idea: Issue Banknotes</h4><p>$b = \text{“I am a banknote # … worth 100 HKD”}$</p>
+<p>之后Alice将 $(b, sgn_{bank} (b))$ sends to Bob，Bob可以验证bank的signature来判断他是不是官方的</p>
+<h5 id="How-to-avoid-double-spending"><a href="#How-to-avoid-double-spending" class="headerlink" title="How to avoid double-spending"></a>How to avoid double-spending</h5><p>Bob can avoid double-spending by depositing immediately。如果bank告诉他这个banknotes已经被用了，那么他就不接受Alice的这个banknote</p>
+<p>但是你会发现这其中有很多问题，比如bank必须要track serial number来判断这个banknote是否已经被用掉了，这就与anonymous不符</p>
+<p>而且bank可以be malicious，他可以issue different banknotes with <strong>same serial numbers</strong>，但Alice无法知道这件事</p>
+<p><em>Solution:</em> <strong>Blind Signing</strong></p>
+<p>Blind signing指的是the person who is signing doesn’t know what on earth he is signing</p>
+<p>此处就相当于bank在不知道 $b$ 的情况下sign $b$</p>
+<hr>
+<h3 id="RSA-Blind-Signatures"><a href="#RSA-Blind-Signatures" class="headerlink" title="RSA Blind Signatures"></a>RSA Blind Signatures</h3><p>The bank has announced $e, N$ but not the secret key $d$ for RSA</p>
+<ul>
+<li>Alice creates a banknotes $b$</li>
+<li>Alice hashes $b$ and obtains $h$</li>
+</ul>
+<p><em>Goal: Alice wants to obtain the signature $h^d$ but doesn’t want the bank to have any information on $h$</em></p>
+<ul>
+<li><p>Alice computes $h’ = h \cdot r^e \mod N$ where $r$ is a random number</p>
+</li>
+<li><p>Alice sends $h’$ to the bank</p>
+</li>
+<li><p>The bank signs $h’$ and sends the signature $(h’)^d$ bank to Alice</p>
+</li>
+<li><p>Alice has $(h’)^d = h^d \cdot r^{de} \equiv h^d \cdot r \pmod N$ according to RSA property: $r^{ed} \mod N = r \mod N$</p>
+<p>  Alice computes $h^d = (h’)^d \cdot r^{- 1} \mod N$</p>
+</li>
+<li><p>Alice sends $(b, h^d)$ to Bob</p>
+</li>
+<li><p>Bob immediately sends $(b, h^d)$ to the bank</p>
+</li>
+<li><p>The bank verifies its own signature</p>
+<ul>
+<li>Increases Bob’s balance by 100 HKD</li>
+<li>Adds the serial number of $b$ to the list of spent banknotes</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>重新回到mixer，但是我们发现，因为SC里面的所有东西都是public的，所以我们没法将 $d$ 这样的private key存到里面，所以我们还需要一个extra actor —— bank (a real-world person)来做blind signature</p>
+<img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230504141548057.png" alt="image-20230504141548057" style="zoom:30%;" />
+
+<ul>
+<li><p>The bank creates $N, e, d$ and sends $N, e$ to the mixer</p>
+</li>
+<li><p>Alice pays the mixer 1 ETH &amp; sends $h’ = h \cdot r^e$</p>
+</li>
+<li><p>The bank signs &amp; sends $(h’)^d$ to the mixer</p>
+<p>  在这一步若bank sends一个假的 $(h’)^d$ 可以被mixer verify出来，因为他拥有 $N, e$</p>
+</li>
+<li><p>Bob sends $(b, h^d)$ to the mixer</p>
+</li>
+<li><p>The mixer transfers 1 ETH to Bob</p>
+</li>
+</ul>
+<p><em>Attack:</em></p>
+<p>The bank can issue extra banknotes. 即他可以issue some fake banknotes自己sign然后去当作Bob取钱</p>
+<p><em>Solution:</em></p>
+<p>Mixer可以在收到Bob的取钱banknote的时候不立即给他钱，而是等到一个ddl再给，如果比如现在我mixer总共存进去1000笔，而取出1001笔，那么就说明bank is cheating，就可以把bank给ban了，然后refund to Alice</p>
+<h2 id="Goldwasser-Micali-Cryptosystem"><a href="#Goldwasser-Micali-Cryptosystem" class="headerlink" title="Goldwasser-Micali Cryptosystem"></a>Goldwasser-Micali Cryptosystem</h2><h3 id="Probabilistic-Encryption-amp-Signature"><a href="#Probabilistic-Encryption-amp-Signature" class="headerlink" title="Probabilistic Encryption &amp; Signature"></a>Probabilistic Encryption &amp; Signature</h3><p>之前我们见到的encryption或是signature全部都是deterministic的，比如RSA的encryption就是unique的。</p>
+<h4 id="Goldwasser-Micali-Cryptosystem-1"><a href="#Goldwasser-Micali-Cryptosystem-1" class="headerlink" title="Goldwasser-Micali Cryptosystem"></a>Goldwasser-Micali Cryptosystem</h4><blockquote>
+<p><strong><em>Quadratic Residual (二次剩余)</em></strong></p>
+<p>$x \in \{0, \cdots, n - 1\}$ is a QR modulo $n$ if $\exists y, y^2 \equiv x \pmod n$</p>
+<p><strong><em>Quadratic Residuosity Problem</em></strong></p>
+<p>Given $n$ and $x$, is $x$ a QR mod $n$?</p>
+<p>If $n$ is a prime $n = p$，根据fermat’s little theorem，$x = y^2 \Rightarrow x^{\frac{p - 1}2} \equiv 1 \pmod p$</p>
+<p>If $n = pq$ and we know $p, q$，那么问题就变成了 $x$ 是否是 $p, q$ 的二次剩余</p>
+</blockquote>
+<p>GM crypto实际上就是based on QR，假如只有发件人Alice知道 $p, q$，那么别人都没法answer QR question，那么我要做的实际上就是达到一个目的: 如果你要decrypt，就必须要answer QR question</p>
+<h5 id="Key-Generation"><a href="#Key-Generation" class="headerlink" title="Key Generation"></a>Key Generation</h5><ul>
+<li><p>Alice picks two large primes $p, q$ and sets $n = pq$</p>
+</li>
+<li><p>Alice finds $x \in \{0, 1, \cdots, n - 1\}$ s.t.</p>
+<ul>
+<li>$x$ is not a QR mod $p$</li>
+<li>$x$ is not a QR mod $q$</li>
+</ul>
+</li>
+<li><p>Alice publishes $(x, n)$ as her public key and uses $(p, q)$ as her secret key</p>
+</li>
+<li><p>假设Bob有个message $m$ 想发给Alice，然后他将其encode为很多bit $m = m_1m_2…m_k$，之后他会encrypt each bit seperately，encrypt的方法如下</p>
+<p>  对于一个bit $m_i$，如若 $m_i = 0$，那么Bob将会send Alice一个是 $p, q$ QR的数，反之则是send一个不是QR的数</p>
+<p>  For every $i$, Bob picks $y_i \in \{0, 1, …, n - 1\}$ s.t. $\gcd (y_i, n) = 1$, $c_i = y_i^2 \cdot x^{m_i}$</p>
+<p>  这样的话，因为 $x$ 不是QR，如果 $m_i = 0$ 那么 $c_i$ 就是QR，反之就不是</p>
+</li>
+</ul>
+<h5 id="Decryption"><a href="#Decryption" class="headerlink" title="Decryption"></a>Decryption</h5><ul>
+<li><p>For every $i$, Alice checks whether $c_i$ is a QR mod $n$</p>
+<p>  If “yes”, then $m_i = 0$, else $m_i = 1$</p>
+</li>
+</ul>
+<p>可以发现，same message可以有很多个encryption</p>
+<h5 id="Homomorphic-Encryption"><a href="#Homomorphic-Encryption" class="headerlink" title="Homomorphic Encryption"></a>Homomorphic Encryption</h5><p><em>Homomorphic Property of GM</em></p>
+<p>$Enc (b_1) \cdot Enc (b_2) = Enc (b_1 \oplus b_2)$</p>
+<p>两个二次剩余的积还是一个二次剩余</p>
+<p><em>Homomorphic Property of RSA</em></p>
+<p>$Enc (m_1) \cdot Enc (m_2) = m_1^e \cdot m_2^e = (m_1m_2)^e = Enc (m_1 \cdot m_2)$</p>
+<h3 id="ElGamal-Cryptosystem"><a href="#ElGamal-Cryptosystem" class="headerlink" title="ElGamal Cryptosystem"></a>ElGamal Cryptosystem</h3><ul>
+<li><p>Alice chooses a prime number $p$ and a secret $a$, a primitive root $g$</p>
+<p>  Public key of Alice is $(p, g^a)$</p>
+</li>
+<li><p>Bob has a message $m$, and chooses a secret $b$, then computes $g^{ab}$</p>
+<p>  Send $(g^b, m + g^{ab})$ to Alice</p>
+</li>
+<li><p>Then Alice can obtain $m$</p>
+</li>
+</ul>
+<p><strong>Zero-knowledge proof</strong></p>
+<p>Alice wants to prove she knows $a$ s.t. $g^a \equiv x \pmod p$</p>
+<p>这时这就可以通过encryption和decryption来实现了，只要Alice decrypt了Bob的message，那么Bob就知道Alice knows $a$</p>
+<h2 id="Zero-Knowledge-Proofs"><a href="#Zero-Knowledge-Proofs" class="headerlink" title="Zero-Knowledge Proofs"></a>Zero-Knowledge Proofs</h2><h3 id="NP"><a href="#NP" class="headerlink" title="NP"></a>NP</h3><p>假设存在两个polynomial $p_1, p_2$, a problem $L$ is in NP if there exists an algorithm $V$ s.t.</p>
+<ul>
+<li><p>$\forall x \in L, \exists y \in \sum^{p_1 (x)}, V (x, y) = 1$</p>
+<p>  即对任意满足problem $L$的condition的 $x$，一定存在某个proof $y$，这个proof的length是 $p_1 (x)$，algorithm $V$可以告诉我们 $y$ 是correct的</p>
+</li>
+<li><p>$\forall x \not\in L, \forall y \in \sum^{p_1 (x)}, V (x, y) = 0$</p>
+</li>
+<li><p>$T (V, x, y) \le p_2 (x + y)$</p>
+<p>  Runtime of the verifier的最大值是 $p_2 (x + y)$</p>
+</li>
+</ul>
+<p>总之就是可以在polynomial的时间内check</p>
+<p><em>Claim:</em> I know the prime factorization of $N = pq$ ($pq$ 是private的，只有我知道)。我要怎么prove我know？</p>
+<p>最简单的办法:</p>
+<p><em>Proof:</em> Disclose $p$ and $q$</p>
+<p><em>Verification:</em> Compute $pq$ and checks if $pq = N$</p>
+<blockquote>
+<p><em>Problem.</em> The prover (Peggy) wants to prove $\phi$ to the verifier (Victor) but she does not want to leak any extra information</p>
+</blockquote>
+<h4 id="Example-1"><a href="#Example-1" class="headerlink" title="Example 1."></a>Example 1.</h4><p>Imagine Victor is color-blind and we have two identical balls 但是分别是green和red</p>
+<p><em>Solution:</em> At each step, Victor randomly shows one ball and Peggy has to say if he swapped</p>
+<h3 id="Zero-Knowledge-Proof"><a href="#Zero-Knowledge-Proof" class="headerlink" title="Zero-Knowledge Proof"></a>Zero-Knowledge Proof</h3><p>It must have these properties:</p>
+<ul>
+<li>If both Peggy &amp; Victor are honest and Peggy’s claim holds, then Victor would be convinced <strong>with high probability</strong></li>
+<li>If Peggy is lying, she cannot convince Victor</li>
+<li>Victor gains no extra knowledge apart from the fact that Peggy’s claim holds (<strong><em>Zero-knowledge property</em></strong>)</li>
+</ul>
+<h4 id="Prove-zero-knowledge-property"><a href="#Prove-zero-knowledge-property" class="headerlink" title="Prove zero-knowledge property"></a>Prove zero-knowledge property</h4><p>Observation: Imagine that Victor records all the interations and later plays the recording for Sarah. <strong>There should be no way to convince Sarah that the recording was not staged.</strong></p>
+<h4 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h4><img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230523174020607.png" alt="image-20230523174020607" style="zoom:33%;" />
+
+<img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230523174335116.png" alt="image-20230523174335116" style="zoom:33%;" />
+
+<p>其中，$y’$ 是Victor自己随便选的一个secret。这个证明的本质就是让Peggy证明自己能算出 $g^{yy’}$，这个是个shared secret，因为Victor也能通过 $x^{y’}$ 算出，所以他就能验证Peggy的claim是否为true</p>
+<img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230523195323230.png" alt="image-20230523195323230" style="zoom:33%;" />
+
+<img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230523195343536.png" alt="image-20230523195343536" style="zoom:33%;" />
+
+<h4 id="Example-1"><a href="#Example-1" class="headerlink" title="Example"></a>Example</h4><p>There is a graph $G$ and Peggy claims that she knows a Hamiltonian cycle (哈密顿回路) in $G$</p>
+<ul>
+<li><p>Peggy chooses a permutation and compute $H \approx G$</p>
+</li>
+<li><p>Peggy commits to every edge of $H$</p>
+<p>  $e_i = (u, v)$ in H, and compute $h_i = hash (u | v | nonce)$ and publish it</p>
+</li>
+<li><p>Victor can ask for</p>
+<ul>
+<li>( i ) Prove isomorphism</li>
+<li>( ii )A Hamiltonian cycle in $H$</li>
+</ul>
+</li>
+<li><p>If Victor asked for ( i ), Peggy reveals every edge in $H$ and the permutation</p>
+<p>  IVictor asked for ( ii ), Peggy only reveals the edges that are in Hamiltonian cycle</p>
+</li>
+</ul>
+<h4 id="Example-2"><a href="#Example-2" class="headerlink" title="Example"></a>Example</h4><img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230523201502033.png" alt="image-20230523201502033" style="zoom:33%;" />
+
+<img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230523201515622.png" alt="image-20230523201515622" style="zoom:33%;" />
+
+<h4 id="Example-3"><a href="#Example-3" class="headerlink" title="Example"></a>Example</h4><img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230523211309310.png" alt="image-20230523211309310" style="zoom:33%;" />
+
+<h4 id="Example-4"><a href="#Example-4" class="headerlink" title="Example"></a>Example</h4><img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230523211337992.png" alt="image-20230523211337992" style="zoom:33%;" />
+
+<h4 id="Example-5"><a href="#Example-5" class="headerlink" title="Example"></a>Example</h4><img src= "/img/loading.gif" data-lazy-src="/Users/colythme/Library/Application Support/typora-user-images/image-20230523211358033.png" alt="image-20230523211358033" style="zoom:33%;" />
+
+
+
+<h2 id="Lecture-25-Be-Vindictive"><a href="#Lecture-25-Be-Vindictive" class="headerlink" title="Lecture 25: Be Vindictive"></a>Lecture 25: Be Vindictive</h2><h3 id="transfer-send-call"><a href="#transfer-send-call" class="headerlink" title="transfer, send, call"></a>transfer, send, call</h3><p>首先transfer和send都有gas limit，可能没有足够的gas去send成功</p>
+<p>假设我们通过调用function $f$，$f$ 中使用了这些transfer money的函数</p>
+<ul>
+<li>transfer: 如果receiver在receive或者fallback上动手脚，比如throw an exception，那么整个 $f$ 会立刻停止运行，使其revert</li>
+<li>send: 但是send并不会revert整个过程</li>
+<li>call: <code>call</code> 不会遇到上述问题，但是receiver可能会intentionally waste gas，比如在fallback里面加入循环</li>
+</ul>
+<p><strong>所以其实最好的方法是，不要我们send他钱，而是让他自己withdraw</strong></p>
+</div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">Colythme</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="http://colythme.github.io/2023/02/09/Introduction%20to%20Blockchain/">http://colythme.github.io/2023/02/09/Introduction%20to%20Blockchain/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Blockchain/">Blockchain</a></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/07/14/NLP%20-%20Skip-gram%20Code%20&amp;%20Annotations%20(Paddle)/"><img class="prev-cover" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">Previous Post</div><div class="prev_info">NLP - Skip-gram Code &amp; Annotations (Paddle)</div></div></a></div><div class="next-post pull-right"><a href="/2022/06/22/RL%20-%20DQN%20&amp;%20FlappyBird%20Implementation/"><img class="next-cover" data-lazy-src="https://i.loli.net/2020/07/13/KhC7N5EDpbt6OM2.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">RL - DQN &amp; FlappyBird Implementation</div></div></a></div></nav></article></main><footer id="footer" style="background-image: url(https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg)" data-type="photo"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By Colythme</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="font_plus" type="button" title="Increase Font Size"><i class="fas fa-plus"></i></button><button id="font_minus" type="button" title="Decrease Font Size"><i class="fas fa-minus"></i></button><button id="translateLink" type="button" title="Switch Between Traditional Chinese And Simplified Chinese">繁</button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">Local search</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>Powered by</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    loader: {
+      source: {
+        '[tex]/amsCd': '[tex]/amscd'
+      }
+    },
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  var script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typeset()
+}</script><script>if (document.getElementsByClassName('mermaid').length) {
+  if (window.mermaidJsLoad) mermaid.init()
+  else {
+    $.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js', function () {
+      window.mermaidJsLoad = true
+      mermaid.initialize({
+        theme: 'dark',
+      })
+      true && mermaid.init()
+    })
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><div class="aplayer no-destroy" data-id="2065854146" data-server="netease" data-type="playlist" data-fixed="true" data-mini="true" data-listFolded="false" data-order="random" data-preload="none" data-autoplay="true" muted></div><script defer="defer" id="ribbon_piao" mobile="true" src="/js/third-party/piao.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: [
+    'title',
+    'meta[name=description]',
+    '#config_change',
+    '#body-wrap',
+    '#rightside-config-hide',
+    '#rightside-config-show',
+    '.js-pjax'
+  ],
+  cacheBust: false,
+})
+
+document.addEventListener('pjax:complete', function () {
+  refreshFn()
+
+  $('script[data-pjax]').each(function () {
+    $(this).parent().append($(this).remove())
+  })
+
+  GLOBAL_CONFIG.islazyload && lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  if (typeof gtag === 'function') {
+    gtag('config', '', {'page_path': window.location.pathname});
+  }
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+})
+
+document.addEventListener('pjax:send', function () {
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  $(window).off('scroll')
+
+  //reset readmode
+  $('body').hasClass('read-mode') && $('body').removeClass('read-mode')
+
+  //reset font-size
+  $('body').css('font-size') !== originFontSize && $('body').css('font-size', parseFloat(originFontSize))
+})</script></div></body></html>
