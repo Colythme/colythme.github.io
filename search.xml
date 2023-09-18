@@ -79,6 +79,31 @@
     
     
     <entry>
+      <title>ABOUT ME</title>
+      <link href="/2023/07/14/ABOUT%20ME/"/>
+      <url>/2023/07/14/ABOUT%20ME/</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>You can call me <strong><em>Hardy</em></strong></p><p><em>HKUST</em> (Hong Kong University of Science and Technology) undergraduate</p><p><strong><em>FRONT-END</em></strong> work showcase: <a href="https://seryol.github.io/">Colythme</a></p><p>Contributor to: <a href="https://github.com/gonglei007/GameDevMind">GameDevMind</a>, <a href="https://github.com/gonglei007/GameDevMind-EN">GameDevMind-EN</a></p><h3 id="Personal-TECH-STACK"><a href="#Personal-TECH-STACK" class="headerlink" title="Personal TECH STACK"></a>Personal <em>TECH STACK</em></h3><hr><ul><li>Programming Languages - C++ | C# | Python | Html | JavaScript | CSS | Solidity | MIPS</li><li>Framework - OpenCV | Vue.js | Three.js | Flask | Pomelo.js</li><li>Game Engine - Unity | Unreal Engine</li><li>Various algorithm including - Dynamic Programming | Math Theory | Graph Theory | Data Structure | etc..</li><li>Social Information Network Analysis and Engineering</li><li>Machine Learning including - CV | NLP | RL | Generator | Transformer | GNN</li><li>Computer Organization - ALU | ISA | Processor (datapath &amp; control) pipeline | memory hierarchy</li><li>Cloud Server usage | Docker usage</li><li>Web3 -  Blockchain principles | Cryptography | Solidity Smart Contract (SC) programming</li><li>Finance - Intermediate Investment | Python Quantitative Trading programming</li></ul><hr>]]></content>
+      
+      
+      <categories>
+          
+          <category> 杂谈 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 杂谈 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>NLP - LSTM Code &amp; Annotations (Paddle)</title>
       <link href="/2023/07/14/NLP%20-%20LSTM%20Code%20&amp;%20Annotations%20(Paddle)/"/>
       <url>/2023/07/14/NLP%20-%20LSTM%20Code%20&amp;%20Annotations%20(Paddle)/</url>
@@ -260,31 +285,6 @@
             <tag> GraphTheory </tag>
             
             <tag> ML </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>ABOUT ME</title>
-      <link href="/2023/07/14/ABOUT%20ME/"/>
-      <url>/2023/07/14/ABOUT%20ME/</url>
-      
-        <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>You can call me <strong><em>Hardy</em></strong></p><p><em>HKUST</em> (Hong Kong University of Science and Technology) undergraduate</p><p><strong><em>FRONT-END</em></strong> work showcase: <a href="https://seryol.github.io/">Colythme</a></p><p>Contributor to: <a href="https://github.com/gonglei007/GameDevMind">GameDevMind</a>, <a href="https://github.com/gonglei007/GameDevMind-EN">GameDevMind-EN</a></p><h3 id="Personal-TECH-STACK"><a href="#Personal-TECH-STACK" class="headerlink" title="Personal TECH STACK"></a>Personal <em>TECH STACK</em></h3><hr><ul><li>Programming Languages - C++ | C# | Python | Html | JavaScript | CSS | Solidity | MIPS</li><li>Framework - OpenCV | Vue.js | Three.js | Flask | Pomelo.js</li><li>Game Engine - Unity | Unreal Engine</li><li>Various algorithm including - Dynamic Programming | Math Theory | Graph Theory | Data Structure | etc..</li><li>Social Information Network Analysis and Engineering</li><li>Machine Learning including - CV | NLP | RL | Generator | Transformer | GNN</li><li>Computer Organization - ALU | ISA | Processor (datapath &amp; control) pipeline | memory hierarchy</li><li>Cloud Server usage | Docker usage</li><li>Web3 -  Blockchain principles | Cryptography | Solidity Smart Contract (SC) programming</li><li>Finance - Intermediate Investment | Python Quantitative Trading programming</li></ul><hr>]]></content>
-      
-      
-      <categories>
-          
-          <category> 杂谈 </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> 杂谈 </tag>
             
         </tags>
       
